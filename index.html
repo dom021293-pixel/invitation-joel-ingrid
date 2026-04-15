@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>✨ Joël & Nadège | Mariage Magique ✨</title>
+    <title>✨ Joël & Nadège | Mariage ✨</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -317,14 +317,13 @@
             Les grandes familles <strong>Zoungrana</strong> et <strong>Simporé</strong><br>
             et les familles alliées
         </div>
-        <div class="famille-centre">
-            <i class="fas fa-heart" style="color:#e68a3e;"></i> ont la joie de vous faire part du mariage de leurs enfants <i class="fas fa-heart" style="color:#e68a3e;"></i>
-        </div>
+     
         <div class="famille-droite">
             <i class="fas fa-feather-alt"></i><br>
             Les grandes familles <strong>Compaoré</strong>, <strong>Ouédraogo</strong>, <strong>Guigma</strong><br>
             et les familles alliées
         </div>
+         
     </div>
 
     <div class="media-area">
@@ -332,9 +331,11 @@
             <div class="vinyl-record" id="vinylRecord"></div>
             <button class="play-pause-btn" id="audioToggleBtn"><i class="fas fa-play"></i></button>
         </div>
-        <div style="font-size: 10px; text-align:center; margin-top: 12px;">🎵 Slow éternel · Canon in D 🎵</div>
+        <div style="font-size: 10px; text-align:center; margin-top: 12px;">🎵 Slow éternel 🎵</div>
     </div>
-
+  <div class="famille-centre">
+            <i class="fas fa-heart" style="color:#e68a3e;"></i> ont la joie de vous faire part du mariage de leurs enfants <i class="fas fa-heart" style="color:#e68a3e;"></i>
+        </div>
     <div class="names">✨ Wendkuuni Joël Dominique ✨<br>✨ & Nadège Ingrid Compaoré ✨</div>
     
     <div class="info-block">
@@ -347,18 +348,18 @@
         <div class="shake-icon"><i class="fas fa-mobile-alt"></i> <i class="fas fa-arrows-spin"></i> <i class="fas fa-magic"></i></div>
         <p>📱 SECOUE TON TÉLÉPHONE (ou double-tap)<br><span style="font-size:12px;">📍 l'adresse secrète apparaîtra</span></p>
         <div class="hidden-address" id="addressBlock">
-            <div><i class="fas fa-map-marker-alt"></i> <strong>CCB Saint Abraham</strong><br>Ouagadougou, Burkina Faso<br><br>
-            <i class="fas fa-utensils"></i> <strong>La Coccinel</strong><br>Lunch à 17h — Accès privé, parking disponible</div>
+            <div><i class="fas fa-map-marker-alt"></i> <strong>CCB Saint Abraham</strong><br>Archidiocèse de Ouagadougou, Paroisse Notre Dame de Apôtres<br><br>
+            <i class="fas fa-utensils"></i> <strong>La Coccinelle</strong><br>Lunch à 17h </div>
         </div>
     </div>
 
-    <button class="btn-rsvp" id="rsvpBtn"><i class="fas fa-envelope-open-text"></i> Confirmer ma présence ✨</button>
-    <div class="footer-note">🎞️ Après confirmation → votre numéro de table | Étoiles, slow & magie</div>
+    <button class="btn-rsvp" id="rsvpBtn"><i class="fas fa-envelope-open-text"></i>Je confirme ma présence ✨</button>
+    <div class="footer-note">🎞️ Après confirmation → votre numéro de table </div>
 </div>
 
 <audio id="fakeAudioTrack" loop preload="auto">
     <!-- Musique slow: Canon in D (Pachelbel) - lien public fiable -->
-    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3" type="audio/mpeg">
     Votre navigateur ne supporte pas l'audio magique.
 </audio>
 
@@ -584,11 +585,11 @@
                 return;
             }
             const newTable = attribuerNumeroTable();
-            alert(`🎉 Merci infiniment ! 🎉\n\n✅ Votre présence est confirmée pour le mariage de Wendkuuni & Nadège.\n🍽️ Votre numéro de TABLE : ${newTable}\n\nRendez-vous le 6 juin 2026 à 15h au CCB Saint Abraham. 💫`);
+            alert(`🎉 Merci infiniment ! 🎉\n\n✅ Votre présence est confirmée pour le mariage de Joël & Nadège.\n🍽️ Votre numéro de TABLE : ${newTable}\n\nRendez-vous le 6 juin 2026 à 15h à la CCB Saint Abraham.\n\nEn attendant garder nous dans vos prières ! 💫`);
             showTablePopup(newTable);
             const vinylDiv = document.querySelector('.vinyl-record');
             vinylDiv.style.transform = "scale(1.08)";
-            setTimeout(() => vinylDiv.style.transform = "", 400);
+            setTimeout(() => vinylDiv.style.transform = "", 600);
         });
         
         function showTablePopup(tableNum) {
