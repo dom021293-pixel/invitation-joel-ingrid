@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Joël & Nadège | Mariage </title>
+    <title>✨ Joël & Nadège | Mariage Magique ✨</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -16,61 +16,82 @@
 
         body {
             min-height: 100vh;
-            background: #0a0f1c;
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'Poppins', sans-serif;
             padding: 16px;
-            transition: background-color 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            position: relative;
+            overflow-x: hidden;
         }
 
-        .polaroid-card {
-            max-width: 580px;
+        /* Canvas arrière-plan magique */
+        #magicCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            background: #fffef7;
-            border-radius: 28px;
-            box-shadow: 0 30px 50px rgba(0,0,0,0.4), 0 0 0 12px #f5f0e6, 0 0 0 14px rgba(0,0,0,0.1);
-            padding: 24px 24px 40px 24px;
-            transition: all 0.3s ease;
+            height: 100%;
+            display: block;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Conteneur principal (au-dessus du canvas) */
+        .polaroid-card {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 254, 247, 0.96);
+            backdrop-filter: blur(2px);
+            border-radius: 32px;
+            box-shadow: 0 40px 60px rgba(0,0,0,0.5), 0 0 0 14px #f5f0e6, 0 0 0 18px rgba(255,215,170,0.3);
+            padding: 28px 28px 44px 28px;
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             position: relative;
-            z-index: 10;
-            animation: floatSoft 4s infinite ease-in-out;
+            z-index: 20;
+            animation: floatSoft 5s infinite ease-in-out;
+            border: 1px solid rgba(255,245,220,0.6);
         }
 
         @keyframes floatSoft {
             0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-6px) rotate(0.3deg); }
+            50% { transform: translateY(-8px) rotate(0.5deg); }
             100% { transform: translateY(0px) rotate(0deg); }
         }
 
-        /* En-tête familles (3 colonnes) */
+        /* En-tête familles */
         .familles-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 24px;
+            gap: 12px;
+            margin-bottom: 28px;
             flex-wrap: wrap;
             text-align: center;
             font-size: 0.75rem;
             font-weight: 500;
-            color: #7a5a44;
-            border-bottom: 1px solid #eeddcc;
-            padding-bottom: 12px;
+            color: #8b694c;
+            border-bottom: 2px solid #fae6d2;
+            padding-bottom: 16px;
         }
         .famille-gauche, .famille-droite {
             flex: 1;
             font-size: 0.7rem;
-            line-height: 1.3;
+            line-height: 1.4;
+            background: #fff9f2;
+            padding: 8px;
+            border-radius: 24px;
         }
         .famille-centre {
-            flex: 1.5;
-            font-size: 0.75rem;
-            font-weight: 600;
-            background: #fff3e8;
-            padding: 6px 8px;
-            border-radius: 40px;
+            flex: 1.6;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff0e0, #ffe6d0);
+            padding: 10px 6px;
+            border-radius: 60px;
+            color: #a56934;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         @media (max-width: 550px) {
             .familles-header { flex-direction: column; }
@@ -78,11 +99,11 @@
         }
 
         .media-area {
-            background: #eae2d7;
-            border-radius: 20px;
-            padding: 16px;
-            margin-bottom: 20px;
-            box-shadow: inset 0 1px 4px rgba(0,0,0,0.05), 0 8px 20px rgba(0,0,0,0.1);
+            background: #eaddcf;
+            border-radius: 28px;
+            padding: 18px;
+            margin-bottom: 24px;
+            box-shadow: inset 0 1px 5px rgba(0,0,0,0.05), 0 12px 24px rgba(0,0,0,0.15);
         }
 
         .vinyl-container {
@@ -96,11 +117,12 @@
             width: 100%;
             max-width: 220px;
             aspect-ratio: 1 / 1;
-            background: radial-gradient(circle at 30% 30%, #2a2a2a, #111);
+            background: radial-gradient(circle at 30% 30%, #2a2a2a, #0a0a0a);
             border-radius: 50%;
-            box-shadow: 0 12px 25px rgba(0,0,0,0.4), 0 0 0 8px #c0b7a8, 0 0 0 12px #f0e5d8;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5), 0 0 0 8px #cbbca8, 0 0 0 14px #f2e4d4;
             position: relative;
-            animation: spinVinyl 4s linear infinite;
+            animation: spinVinyl 6s linear infinite;
+            transition: transform 0.2s;
         }
 
         @keyframes spinVinyl {
@@ -114,94 +136,104 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 38px;
-            color: #ffd966;
-            background: #222;
-            width: 55px;
-            height: 55px;
+            font-size: 44px;
+            color: #ffda99;
+            background: #1f1b16;
+            width: 65px;
+            height: 65px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: inset 0 0 0 3px #ffc285;
+            box-shadow: inset 0 0 0 4px #f3bc7a, 0 0 12px rgba(0,0,0,0.5);
+            font-family: 'Font Awesome 6 Free';
         }
 
         .play-pause-btn {
             position: absolute;
-            bottom: -15px;
-            right: 10px;
-            background: #302418;
-            color: #ffd9a5;
+            bottom: -18px;
+            right: 15px;
+            background: #4a3628;
+            color: #ffefcf;
             border: none;
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             border-radius: 60px;
             font-size: 1.3rem;
             cursor: pointer;
             transition: 0.2s;
+            box-shadow: 0 4px 12px black;
+            z-index: 30;
         }
+        .play-pause-btn:active { transform: scale(0.95); }
 
         .names {
             font-family: 'Playfair Display', serif;
-            font-size: 1.7rem;
-            font-weight: 700;
+            font-size: 1.8rem;
+            font-weight: 800;
             text-align: center;
-            background: linear-gradient(135deg, #b86b2c, #e6a157);
+            background: linear-gradient(135deg, #bc6f2c, #e8a75d);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            margin: 12px 0 4px;
+            margin: 16px 0 8px;
+            letter-spacing: 1px;
         }
 
         .date-badge {
             text-align: center;
-            background: #f2e8dc;
+            background: #f4e8dd;
             display: inline-block;
             width: auto;
-            margin: 8px auto;
-            padding: 6px 18px;
-            border-radius: 50px;
+            margin: 10px auto;
+            padding: 8px 24px;
+            border-radius: 60px;
             font-size: 0.9rem;
+            font-weight: 600;
+            color: #78471e;
         }
 
         .info-block {
-            background: #faf3e9;
-            border-radius: 20px;
-            padding: 12px;
-            margin: 12px 0;
+            background: linear-gradient(145deg, #fdf7f0, #faf0e6);
+            border-radius: 28px;
+            padding: 16px;
+            margin: 18px 0;
             text-align: center;
+            box-shadow: inset 0 1px 3px #fff8, 0 6px 12px rgba(0,0,0,0.05);
         }
 
         .shake-to-reveal {
-            background: #faf3e9;
-            border-radius: 24px;
-            margin: 16px 0;
-            padding: 12px;
+            background: #fef5eb;
+            border-radius: 32px;
+            margin: 20px 0;
+            padding: 16px;
             text-align: center;
-            border: 2px dashed #d6b17e;
+            border: 2px dashed #e7b27d;
+            transition: 0.2s;
         }
 
         .hidden-address {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.7s cubic-bezier(0.33, 1, 0.68, 1);
-            background: #fff2e2;
-            border-radius: 18px;
+            transition: max-height 0.8s cubic-bezier(0.33, 1, 0.68, 1);
+            background: #fff5ea;
+            border-radius: 24px;
         }
 
         .hidden-address.show {
-            max-height: 250px;
-            padding: 16px;
-            margin-top: 12px;
+            max-height: 280px;
+            padding: 18px;
+            margin-top: 16px;
+            border: 1px solid #e7bc8c;
         }
 
         .btn-rsvp {
-            background: #c2854b;
+            background: linear-gradient(95deg, #c2854b, #b06931);
             border: none;
-            padding: 14px 20px;
+            padding: 16px 20px;
             width: 100%;
-            font-weight: 600;
-            font-size: 1rem;
+            font-weight: 700;
+            font-size: 1.1rem;
             border-radius: 60px;
             color: white;
             display: flex;
@@ -210,54 +242,72 @@
             gap: 12px;
             cursor: pointer;
             transition: 0.2s;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.2);
         }
 
-        .btn-rsvp:hover { transform: scale(1.02); background: #b0723a; }
+        .btn-rsvp:active { transform: scale(0.98); }
 
         .table-popup {
             position: fixed;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background: #2c1a0c;
-            color: #ffefcf;
-            padding: 16px 24px;
-            border-radius: 60px;
+            background: #2b1d12;
+            color: #fff2e0;
+            padding: 16px 28px;
+            border-radius: 80px;
             font-weight: bold;
             font-size: 1.2rem;
-            z-index: 1000;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 2000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
             animation: fadeUp 0.3s ease;
             text-align: center;
+            backdrop-filter: blur(8px);
         }
 
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            from { opacity: 0; transform: translateX(-50%) translateY(30px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
         .ephemeral-tag {
-            background: #2c241a;
+            background: #30261e;
             display: inline-block;
-            padding: 5px 14px;
+            padding: 5px 16px;
             border-radius: 40px;
             font-size: 0.7rem;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
+            color: #ffdebc;
         }
-
         .footer-note {
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             text-align: center;
-            margin-top: 16px;
-            color: #9b7b60;
+            margin-top: 20px;
+            color: #a58362;
+        }
+        /* animation cœur flottant */
+        .floating-heart {
+            position: fixed;
+            bottom: 0;
+            font-size: 1.5rem;
+            pointer-events: none;
+            z-index: 1000;
+            animation: floatUp 2s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.8); opacity: 1; bottom: 0; }
+            100% { transform: translateY(-200px) scale(1.2); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
+<canvas id="magicCanvas"></canvas>
+
 <div class="polaroid-card" id="polaroidCard">
-    <div style="display: flex; justify-content: space-between;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
         <div class="ephemeral-tag" id="dayColorLabel">✨ teinte du jour ✨</div>
+        <i class="fas fa-star-of-life" style="color:#c2854b; opacity:0.6;"></i>
     </div>
 
     <!-- En-tête familles -->
@@ -267,14 +317,13 @@
             Les grandes familles <strong>Zoungrana</strong> et <strong>Simporé</strong><br>
             et les familles alliées
         </div>
-     
+        <div class="famille-centre">
+            <i class="fas fa-heart" style="color:#e68a3e;"></i> ont la joie de vous faire part du mariage de leurs enfants <i class="fas fa-heart" style="color:#e68a3e;"></i>
+        </div>
         <div class="famille-droite">
             <i class="fas fa-feather-alt"></i><br>
             Les grandes familles <strong>Compaoré</strong>, <strong>Ouédraogo</strong>, <strong>Guigma</strong><br>
             et les familles alliées
-        </div>
-           <div class="famille-centre">
-            <i class="fas fa-heart"></i> ont la joie de vous faire part du mariage de leurs enfants <i class="fas fa-heart"></i>
         </div>
     </div>
 
@@ -283,7 +332,7 @@
             <div class="vinyl-record" id="vinylRecord"></div>
             <button class="play-pause-btn" id="audioToggleBtn"><i class="fas fa-play"></i></button>
         </div>
-       
+        <div style="font-size: 10px; text-align:center; margin-top: 12px;">🎵 Slow éternel · Canon in D 🎵</div>
     </div>
 
     <div class="names">✨ Wendkuuni Joël Dominique ✨<br>✨ & Nadège Ingrid Compaoré ✨</div>
@@ -295,51 +344,166 @@
     </div>
 
     <div class="shake-to-reveal" id="shakeZone">
-        <div class="shake-icon"><i class="fas fa-mobile-alt"></i> <i class="fas fa-arrows-spin"></i></div>
+        <div class="shake-icon"><i class="fas fa-mobile-alt"></i> <i class="fas fa-arrows-spin"></i> <i class="fas fa-magic"></i></div>
         <p>📱 SECOUE TON TÉLÉPHONE (ou double-tap)<br><span style="font-size:12px;">📍 l'adresse secrète apparaîtra</span></p>
         <div class="hidden-address" id="addressBlock">
             <div><i class="fas fa-map-marker-alt"></i> <strong>CCB Saint Abraham</strong><br>Ouagadougou, Burkina Faso<br><br>
-            <i class="fas fa-utensils"></i> <strong>La Coccinel</strong><br>Lunch à 17h — Plan d'accès disponible sur demande</div>
+            <i class="fas fa-utensils"></i> <strong>La Coccinel</strong><br>Lunch à 17h — Accès privé, parking disponible</div>
         </div>
     </div>
 
     <button class="btn-rsvp" id="rsvpBtn"><i class="fas fa-envelope-open-text"></i> Confirmer ma présence ✨</button>
-    <div class="footer-note">🎞️ Après confirmation → votre numéro de table | Carte magique et éphémère</div>
+    <div class="footer-note">🎞️ Après confirmation → votre numéro de table | Étoiles, slow & magie</div>
 </div>
 
 <audio id="fakeAudioTrack" loop preload="auto">
-    <!-- Musique douce : Clair de Lune (Debussy) ambiance romantique, libre de droits -->
-    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    <!-- Musique slow: Canon in D (Pachelbel) - lien public fiable -->
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
     Votre navigateur ne supporte pas l'audio magique.
 </audio>
 
 <script>
     (function() {
-        // === 1. COULEUR ÉPHÉMÈRE ===
+        // ========== 1. CANVAS MAGIQUE : ÉTOILES + PÉTALES ==========
+        const canvas = document.getElementById('magicCanvas');
+        const ctx = canvas.getContext('2d');
+        let w, h;
+        let stars = [];
+        let petals = [];
+        
+        function resizeCanvas() {
+            w = window.innerWidth;
+            h = window.innerHeight;
+            canvas.width = w;
+            canvas.height = h;
+            initStars();
+            initPetals();
+        }
+        
+        function initStars() {
+            stars = [];
+            const count = Math.floor(w * h / 4000);
+            for(let i=0; i<count; i++) {
+                stars.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    r: Math.random() * 2.5,
+                    alpha: Math.random() * 0.6 + 0.2,
+                    twinkle: Math.random() * 0.03,
+                });
+            }
+        }
+        
+        function initPetals() {
+            petals = [];
+            for(let i=0; i<35; i++) {
+                petals.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    size: 5 + Math.random() * 8,
+                    speedY: 0.6 + Math.random() * 1.5,
+                    speedX: (Math.random() - 0.5) * 0.5,
+                    rotation: Math.random() * Math.PI * 2,
+                    color: `rgba(255, 180, 160, ${0.5+Math.random()*0.4})`
+                });
+            }
+        }
+        
+        function drawStars() {
+            for(let s of stars) {
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(255, 240, 200, ${s.alpha + Math.sin(Date.now() * 0.002 * s.twinkle) * 0.2})`;
+                ctx.fill();
+            }
+        }
+        
+        let shootingStars = [];
+        function addShootingStar() {
+            shootingStars.push({
+                x: Math.random() * w,
+                y: Math.random() * h * 0.3,
+                length: 60 + Math.random() * 80,
+                angle: Math.PI / 3 + (Math.random() - 0.5) * 0.5,
+                speed: 5 + Math.random() * 7,
+                life: 1,
+            });
+        }
+        setInterval(() => { if(Math.random()<0.4) addShootingStar(); }, 4000);
+        
+        function drawShootingStars() {
+            for(let i=0; i<shootingStars.length; i++) {
+                const s = shootingStars[i];
+                const dx = Math.cos(s.angle) * s.speed;
+                const dy = Math.sin(s.angle) * s.speed;
+                ctx.beginPath();
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(s.x - dx*2, s.y - dy*2);
+                ctx.strokeStyle = `rgba(255, 210, 120, ${s.life * 0.8})`;
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+                s.x += dx;
+                s.y += dy;
+                s.life -= 0.02;
+                if(s.x > w || s.y > h || s.life <=0) shootingStars.splice(i,1);
+            }
+        }
+        
+        function drawPetals() {
+            for(let p of petals) {
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rotation);
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, p.size/2, p.size/3, 0, 0, Math.PI*2);
+                ctx.fill();
+                ctx.restore();
+                p.y += p.speedY;
+                p.x += p.speedX;
+                p.rotation += 0.03;
+                if(p.y > h + 30 || p.x < -50 || p.x > w+50) {
+                    p.y = -20;
+                    p.x = Math.random() * w;
+                }
+            }
+        }
+        
+        function animateBackground() {
+            if(!ctx) return;
+            ctx.clearRect(0, 0, w, h);
+            drawStars();
+            drawShootingStars();
+            drawPetals();
+            requestAnimationFrame(animateBackground);
+        }
+        
+        window.addEventListener('resize', () => { resizeCanvas(); });
+        resizeCanvas();
+        animateBackground();
+        
+        // ========== 2. COULEUR ÉPHÉMÈRE ==========
         const today = new Date();
         const weddingDate = new Date(2026, 5, 6);
         const daysLeft = Math.ceil((weddingDate - today) / (1000 * 60 * 60 * 24));
         const colors = [
-            { bg: "#1e2a3e", cardTint: "#f9efdf" },
-            { bg: "#2d3e4b", cardTint: "#fdf6ea" },
-            { bg: "#4a3b2c", cardTint: "#fff5e8" },
-            { bg: "#6b4c3a", cardTint: "#fff0e0" },
-            { bg: "#9b6a4a", cardTint: "#fffbee" },
-            { bg: "#bc7f54", cardTint: "#fff4e6" },
+            { bg: "#1e2a3e", cardTint: "#f9efdf" }, { bg: "#2d3e4b", cardTint: "#fdf6ea" },
+            { bg: "#4a3b2c", cardTint: "#fff5e8" }, { bg: "#6b4c3a", cardTint: "#fff0e0" },
+            { bg: "#9b6a4a", cardTint: "#fffbee" }, { bg: "#bc7f54", cardTint: "#fff4e6" },
             { bg: "#d99e5c", cardTint: "#fff8ef" }
         ];
         const idx = (today.getDate() + today.getMonth()) % colors.length;
-        document.body.style.backgroundColor = colors[idx].bg;
+        document.body.style.background = `radial-gradient(circle at center, ${colors[idx].bg} 0%, #020617 100%)`;
         document.getElementById('dayColorLabel').innerHTML = `<i class="fas fa-palette"></i> jour ${daysLeft > 0 ? daysLeft : "JOUR J"}`;
-
-        // === 2. VINYLE + AUDIO DOUCE ===
+        
+        // ========== 3. VINYLE + MUSIQUE SLOW ==========
         const audio = document.getElementById('fakeAudioTrack');
         const toggleBtn = document.getElementById('audioToggleBtn');
         const vinyl = document.getElementById('vinylRecord');
         let isPlaying = false;
-        audio.volume = 0.25;  // Volume doux
+        audio.volume = 0.3;
         audio.loop = true;
-
+        
         toggleBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             if (isPlaying) {
@@ -347,24 +511,23 @@
                 toggleBtn.innerHTML = '<i class="fas fa-play"></i>';
                 vinyl.style.animationPlayState = 'paused';
             } else {
-                audio.play().catch(() => console.log("Autoplay bloqué"));
+                audio.play().catch(() => console.log("autoplay bloqué"));
                 toggleBtn.innerHTML = '<i class="fas fa-pause"></i>';
                 vinyl.style.animationPlayState = 'running';
             }
             isPlaying = !isPlaying;
         });
         vinyl.style.animationPlayState = 'paused';
-
-        // === 3. SECOUER POUR ADRESSE ===
+        
+        // ========== 4. SECOUER ADRESSE ==========
         const addressDiv = document.getElementById('addressBlock');
         let hasRevealed = false;
         function revealAddress() {
             if (!hasRevealed) {
                 addressDiv.classList.add('show');
                 hasRevealed = true;
-                const card = document.getElementById('polaroidCard');
-                card.style.transform = "scale(1.01)";
-                setTimeout(() => card.style.transform = "", 300);
+                document.getElementById('polaroidCard').style.transform = "scale(1.01)";
+                setTimeout(() => document.getElementById('polaroidCard').style.transform = "", 300);
                 if (navigator.vibrate) navigator.vibrate(50);
             }
         }
@@ -384,12 +547,24 @@
             lastX = acc.x; lastY = acc.y; lastZ = acc.z;
         });
         document.getElementById('shakeZone').addEventListener('dblclick', revealAddress);
-
-        // === 4. RSVP + TABLE ===
+        
+        // ========== 5. RSVP + TABLE + CŒURS FLOTTANTS ==========
         const rsvpBtn = document.getElementById('rsvpBtn');
         let alreadyConfirmed = localStorage.getItem('wedding_table_assigned');
         let tableNumber = alreadyConfirmed ? parseInt(alreadyConfirmed) : null;
-
+        
+        function createFloatingHearts() {
+            for(let i=0;i<12;i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = ['❤️','💖','💗','✨','💕'][Math.floor(Math.random()*5)];
+                heart.className = 'floating-heart';
+                heart.style.left = Math.random() * window.innerWidth + 'px';
+                heart.style.fontSize = (16 + Math.random() * 20) + 'px';
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 2000);
+            }
+        }
+        
         function attribuerNumeroTable() {
             if (tableNumber) return tableNumber;
             const totalTables = 24;
@@ -399,8 +574,10 @@
             tableNumber = newTable;
             return tableNumber;
         }
-
+        
         rsvpBtn.addEventListener('click', () => {
+            createFloatingHearts();
+            if (navigator.vibrate) navigator.vibrate(80);
             if (tableNumber) {
                 alert(`✨ Vous avez déjà confirmé ! ✨\n🍽️ Votre table est la n°${tableNumber}. À très bientôt ! 🥂`);
                 showTablePopup(tableNumber);
@@ -413,26 +590,21 @@
             vinylDiv.style.transform = "scale(1.08)";
             setTimeout(() => vinylDiv.style.transform = "", 400);
         });
-
+        
         function showTablePopup(tableNum) {
             const existing = document.querySelector('.table-popup');
             if(existing) existing.remove();
             const popup = document.createElement('div');
             popup.className = 'table-popup';
-            popup.innerHTML = `🍽️ TABLE N° ${tableNum} 🍽️<br><span style="font-size:0.9rem;">Joël et Nadège vous attendent avec joie !</span>`;
+            popup.innerHTML = `🍽️ TABLE N° ${tableNum} 🍽️<br><span style="font-size:0.9rem;">Joël & Nadège vous attendent avec joie !</span>`;
             document.body.appendChild(popup);
             setTimeout(() => popup.remove(), 5000);
         }
-
-        if (tableNumber) {
-            setTimeout(() => showTablePopup(tableNumber), 1500);
-        }
-
-        // Petit déclenchement audio après premier contact (pour mobile)
+        
+        if (tableNumber) setTimeout(() => showTablePopup(tableNumber), 1500);
+        
         document.body.addEventListener('touchstart', function initOnce() {
-            if (!isPlaying && audio.paused) {
-                audio.play().catch(()=>{});
-            }
+            if (!isPlaying && audio.paused) audio.play().catch(()=>{});
             document.body.removeEventListener('touchstart', initOnce);
         }, { once: true });
     })();
