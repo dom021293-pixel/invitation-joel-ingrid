@@ -92,6 +92,7 @@
             border-radius: 60px;
             color: #a56934;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            text-align: center; 
         }
         @media (max-width: 550px) {
             .familles-header { flex-direction: column; }
@@ -334,7 +335,7 @@
         <div style="font-size: 10px; text-align:center; margin-top: 12px;">🎵 Slow éternel 🎵</div>
     </div>
   <div class="famille-centre">
-            <i class="fas fa-heart" style="color:#e68a3e;"></i> ont la joie de vous faire part du mariage de leurs enfants <i class="fas fa-heart" style="color:#e68a3e;"></i>
+            <i class="fas fa-heart" style="color:#e68a3e; text-align: center;"></i> ont la joie de vous faire part du mariage de leurs enfants <i class="fas fa-heart" style="color:#e68a3e;"></i>
         </div>
     <div class="names">✨ Wendkuuni Joël Dominique ✨<br>✨ & Nadège Ingrid Compaoré ✨</div>
     
@@ -597,7 +598,7 @@
             if(existing) existing.remove();
             const popup = document.createElement('div');
             popup.className = 'table-popup';
-            popup.innerHTML = `🍽️ TABLE N° ${tableNum} 🍽️<br><span style="font-size:0.9rem;">Joël & Nadège vous attendent avec joie !</span>`;
+            popup.innerHTML = `🍽️ TABLE N° ${tableNum} 🍽️<br><span style="font-size:0.9rem;">Joël & Nadège vous attendent avec joie ! \nPriez pour nous !</span>`;
             document.body.appendChild(popup);
             setTimeout(() => popup.remove(), 5000);
         }
