@@ -26,7 +26,7 @@
         }
 
         .polaroid-card {
-            max-width: 520px;
+            max-width: 580px;
             width: 100%;
             background: #fffef7;
             border-radius: 28px;
@@ -44,11 +44,44 @@
             100% { transform: translateY(0px) rotate(0deg); }
         }
 
+        /* En-tête familles (3 colonnes) */
+        .familles-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #7a5a44;
+            border-bottom: 1px solid #eeddcc;
+            padding-bottom: 12px;
+        }
+        .famille-gauche, .famille-droite {
+            flex: 1;
+            font-size: 0.7rem;
+            line-height: 1.3;
+        }
+        .famille-centre {
+            flex: 1.5;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #fff3e8;
+            padding: 6px 8px;
+            border-radius: 40px;
+        }
+        @media (max-width: 550px) {
+            .familles-header { flex-direction: column; }
+            .famille-gauche, .famille-droite, .famille-centre { width: 100%; }
+        }
+
         .media-area {
             background: #eae2d7;
             border-radius: 20px;
             padding: 16px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             box-shadow: inset 0 1px 4px rgba(0,0,0,0.05), 0 8px 20px rgba(0,0,0,0.1);
         }
 
@@ -61,7 +94,7 @@
 
         .vinyl-record {
             width: 100%;
-            max-width: 260px;
+            max-width: 220px;
             aspect-ratio: 1 / 1;
             background: radial-gradient(circle at 30% 30%, #2a2a2a, #111);
             border-radius: 50%;
@@ -81,11 +114,11 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 42px;
+            font-size: 38px;
             color: #ffd966;
             background: #222;
-            width: 60px;
-            height: 60px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -105,17 +138,19 @@
             border-radius: 60px;
             font-size: 1.3rem;
             cursor: pointer;
+            transition: 0.2s;
         }
 
         .names {
             font-family: 'Playfair Display', serif;
-            font-size: 1.9rem;
+            font-size: 1.7rem;
             font-weight: 700;
             text-align: center;
             background: linear-gradient(135deg, #b86b2c, #e6a157);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
+            margin: 12px 0 4px;
         }
 
         .date-badge {
@@ -123,15 +158,24 @@
             background: #f2e8dc;
             display: inline-block;
             width: auto;
-            margin: 12px auto;
+            margin: 8px auto;
             padding: 6px 18px;
             border-radius: 50px;
+            font-size: 0.9rem;
+        }
+
+        .info-block {
+            background: #faf3e9;
+            border-radius: 20px;
+            padding: 12px;
+            margin: 12px 0;
+            text-align: center;
         }
 
         .shake-to-reveal {
             background: #faf3e9;
             border-radius: 24px;
-            margin: 20px 0;
+            margin: 16px 0;
             padding: 12px;
             text-align: center;
             border: 2px dashed #d6b17e;
@@ -165,9 +209,11 @@
             justify-content: center;
             gap: 12px;
             cursor: pointer;
+            transition: 0.2s;
         }
 
-        /* Popup table */
+        .btn-rsvp:hover { transform: scale(1.02); background: #b0723a; }
+
         .table-popup {
             position: fixed;
             bottom: 30px;
@@ -199,9 +245,11 @@
             margin-bottom: 12px;
         }
 
-        @media (max-width: 550px) {
-            .polaroid-card { padding: 18px; }
-            .names { font-size: 1.5rem; }
+        .footer-note {
+            font-size: 0.65rem;
+            text-align: center;
+            margin-top: 16px;
+            color: #9b7b60;
         }
     </style>
 </head>
@@ -212,31 +260,56 @@
         <div class="ephemeral-tag" id="dayColorLabel">✨ teinte du jour ✨</div>
     </div>
 
+    <!-- En-tête familles -->
+    <div class="familles-header">
+        <div class="famille-gauche">
+            <i class="fas fa-tree"></i><br>
+            Les grandes familles <strong>Zoungrana</strong> et <strong>Simporé</strong><br>
+            et les familles alliées
+        </div>
+        <div class="famille-centre">
+            <i class="fas fa-heart"></i> ont la joie de vous faire part du mariage de leurs enfants <i class="fas fa-heart"></i>
+        </div>
+        <div class="famille-droite">
+            <i class="fas fa-feather-alt"></i><br>
+            Les grandes familles <strong>Compaoré</strong>, <strong>Ouédraogo</strong>, <strong>Guigma</strong><br>
+            et les familles alliées
+        </div>
+    </div>
+
     <div class="media-area">
         <div class="vinyl-container">
             <div class="vinyl-record" id="vinylRecord"></div>
             <button class="play-pause-btn" id="audioToggleBtn"><i class="fas fa-play"></i></button>
         </div>
-        <div style="font-size: 10px; text-align:center; margin-top:8px;">🎵 notre chanson d'amour</div>
+        <div style="font-size: 10px; text-align:center; margin-top:8px;">🎵 Musique douce · Notre amour en notes 🎵</div>
     </div>
 
     <div class="names">✨ Wendkuuni Joël Dominique ✨<br>✨ & Nadège Ingrid Compaoré ✨</div>
-    <div class="date-badge"><i class="far fa-calendar-alt"></i> 6 JUIN 2026 — 17h00</div>
+    
+    <div class="info-block">
+        <div class="date-badge"><i class="far fa-calendar-alt"></i> 6 JUIN 2026 — Cérémonie 15h</div>
+        <div><i class="fas fa-church"></i> <strong>CCB Saint Abraham</strong></div>
+        <div style="margin-top: 6px;"><i class="fas fa-utensils"></i> Lunch 17h — <strong>La Coccinel</strong></div>
+    </div>
 
     <div class="shake-to-reveal" id="shakeZone">
         <div class="shake-icon"><i class="fas fa-mobile-alt"></i> <i class="fas fa-arrows-spin"></i></div>
         <p>📱 SECOUE TON TÉLÉPHONE (ou double-tap)<br><span style="font-size:12px;">📍 l'adresse secrète apparaîtra</span></p>
         <div class="hidden-address" id="addressBlock">
-            <div><i class="fas fa-map-marker-alt"></i> <strong>Domaine des Étoiles Filantes</strong><br>Rue des Acacias, Ouagadougou<br>Salle "Aube Radieuse"</div>
+            <div><i class="fas fa-map-marker-alt"></i> <strong>CCB Saint Abraham</strong><br>Ouagadougou, Burkina Faso<br><br>
+            <i class="fas fa-utensils"></i> <strong>La Coccinel</strong><br>Lunch à 17h — Plan d'accès disponible sur demande</div>
         </div>
     </div>
 
     <button class="btn-rsvp" id="rsvpBtn"><i class="fas fa-envelope-open-text"></i> Confirmer ma présence ✨</button>
-    <div class="footer-note" style="font-size:0.7rem; text-align:center; margin-top:16px;">🎞️ Après confirmation → votre numéro de table</div>
+    <div class="footer-note">🎞️ Après confirmation → votre numéro de table | Carte magique et éphémère</div>
 </div>
 
 <audio id="fakeAudioTrack" loop preload="auto">
-    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
+    <!-- Musique douce : Clair de Lune (Debussy) ambiance romantique, libre de droits -->
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    Votre navigateur ne supporte pas l'audio magique.
 </audio>
 
 <script>
@@ -258,20 +331,22 @@
         document.body.style.backgroundColor = colors[idx].bg;
         document.getElementById('dayColorLabel').innerHTML = `<i class="fas fa-palette"></i> jour ${daysLeft > 0 ? daysLeft : "JOUR J"}`;
 
-        // === 2. VINYLE + AUDIO ===
+        // === 2. VINYLE + AUDIO DOUCE ===
         const audio = document.getElementById('fakeAudioTrack');
         const toggleBtn = document.getElementById('audioToggleBtn');
         const vinyl = document.getElementById('vinylRecord');
         let isPlaying = false;
-        audio.volume = 0.3;
+        audio.volume = 0.25;  // Volume doux
+        audio.loop = true;
 
-        toggleBtn.addEventListener('click', () => {
+        toggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             if (isPlaying) {
                 audio.pause();
                 toggleBtn.innerHTML = '<i class="fas fa-play"></i>';
                 vinyl.style.animationPlayState = 'paused';
             } else {
-                audio.play().catch(() => {});
+                audio.play().catch(() => console.log("Autoplay bloqué"));
                 toggleBtn.innerHTML = '<i class="fas fa-pause"></i>';
                 vinyl.style.animationPlayState = 'running';
             }
@@ -289,9 +364,9 @@
                 const card = document.getElementById('polaroidCard');
                 card.style.transform = "scale(1.01)";
                 setTimeout(() => card.style.transform = "", 300);
+                if (navigator.vibrate) navigator.vibrate(50);
             }
         }
-        // Détection secouement mobile
         let lastX, lastY, lastZ, lastShake = 0;
         window.addEventListener('devicemotion', (e) => {
             const acc = e.accelerationIncludingGravity;
@@ -307,34 +382,18 @@
             }
             lastX = acc.x; lastY = acc.y; lastZ = acc.z;
         });
-        // double-clic fallback
-        const shakeZone = document.getElementById('shakeZone');
-        shakeZone.addEventListener('dblclick', revealAddress);
+        document.getElementById('shakeZone').addEventListener('dblclick', revealAddress);
 
-        // === 4. RSVP + ATTRIBUTION NUMÉRO DE TABLE (100% GRATUIT, LOCAL) ===
+        // === 4. RSVP + TABLE ===
         const rsvpBtn = document.getElementById('rsvpBtn');
-        // On stocke les numéros déjà attribués dans le localStorage (simule une base)
-        // Pour que ce soit unique par invité (même téléphone/navigateur)
         let alreadyConfirmed = localStorage.getItem('wedding_table_assigned');
-        let tableNumber = null;
-
-        if (alreadyConfirmed) {
-            tableNumber = alreadyConfirmed;
-        }
+        let tableNumber = alreadyConfirmed ? parseInt(alreadyConfirmed) : null;
 
         function attribuerNumeroTable() {
             if (tableNumber) return tableNumber;
-            // Tables de 1 à 20
-            const totalTables = 20;
-            // Simuler un compteur global (pour que ce soit cohérent sur tous les téléphones,
-            // on utilise une approche pseudo-aléatoire mais fixe basée sur l'horodatage + jour)
-            // Mais pour une vraie répartition unique, on utilise le timestamp du premier RSVP + localStorage partagé? 
-            // Version simple et magique : nombre aléatoire entre 1 et 20, mais pour éviter conflits on utilise une graine
-            // On va utiliser une méthode qui semble unique mais rigolote : basée sur l'heure + un salt
-            const seed = Math.floor((Date.now() / 1000 / 3600) % 1000); // change toutes les heures un peu
-            const pseudoRandom = (seed % totalTables) + 1;
-            // Pour que deux confirmations proches aient potentiellement des tables différentes :
-            let newTable = ((pseudoRandom + Math.floor(Math.random() * 5)) % totalTables) + 1;
+            const totalTables = 24;
+            const seed = Math.floor((Date.now() / 1000 / 3600) % 1000);
+            let newTable = ((seed + Math.floor(Math.random() * totalTables)) % totalTables) + 1;
             localStorage.setItem('wedding_table_assigned', newTable);
             tableNumber = newTable;
             return tableNumber;
@@ -342,16 +401,13 @@
 
         rsvpBtn.addEventListener('click', () => {
             if (tableNumber) {
-                // déjà confirmé
-                alert(`✨ Vous avez déjà confirmé ! ✨\nVotre table est la numéro ${tableNumber}. À très bientôt ! 🥂`);
+                alert(`✨ Vous avez déjà confirmé ! ✨\n🍽️ Votre table est la n°${tableNumber}. À très bientôt ! 🥂`);
                 showTablePopup(tableNumber);
                 return;
             }
             const newTable = attribuerNumeroTable();
-            // Message de confirmation + affichage du numéro de table
-            alert(`🎉 Merci infiniment ${newTable ? "!" : "!"} 🎉\n\n✅ Votre présence est confirmée.\n🍽️ Votre numéro de TABLE : ${newTable}\n\nNous avons hâte de vous célébrer ! 💫`);
+            alert(`🎉 Merci infiniment ! 🎉\n\n✅ Votre présence est confirmée pour le mariage de Wendkuuni & Nadège.\n🍽️ Votre numéro de TABLE : ${newTable}\n\nRendez-vous le 6 juin 2026 à 15h au CCB Saint Abraham. 💫`);
             showTablePopup(newTable);
-            // Optionnel : animation de joie
             const vinylDiv = document.querySelector('.vinyl-record');
             vinylDiv.style.transform = "scale(1.08)";
             setTimeout(() => vinylDiv.style.transform = "", 400);
@@ -362,17 +418,22 @@
             if(existing) existing.remove();
             const popup = document.createElement('div');
             popup.className = 'table-popup';
-            popup.innerHTML = `🍽️ TABLE N° ${tableNum} 🍽️<br><span style="font-size:0.9rem;">À très vite, belle fête en vue !</span>`;
+            popup.innerHTML = `🍽️ TABLE N° ${tableNum} 🍽️<br><span style="font-size:0.9rem;">Nous vous attendons avec joie !</span>`;
             document.body.appendChild(popup);
             setTimeout(() => popup.remove(), 5000);
         }
 
-        // Petite astuce : si la personne avait déjà confirmé, on lui rappelle sa table au chargement
         if (tableNumber) {
-            setTimeout(() => {
-                showTablePopup(tableNumber);
-            }, 1500);
+            setTimeout(() => showTablePopup(tableNumber), 1500);
         }
+
+        // Petit déclenchement audio après premier contact (pour mobile)
+        document.body.addEventListener('touchstart', function initOnce() {
+            if (!isPlaying && audio.paused) {
+                audio.play().catch(()=>{});
+            }
+            document.body.removeEventListener('touchstart', initOnce);
+        }, { once: true });
     })();
 </script>
 </body>
