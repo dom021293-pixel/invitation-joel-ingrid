@@ -22,6 +22,8 @@
         .empty { text-align: center; padding: 40px; color: #a58362; }
         .note { margin-top: 24px; background: #fff0e0; padding: 14px 20px; border-radius: 20px; font-size: 0.85rem; color: #5e3a22; }
         .loading { text-align: center; padding: 40px; }
+        .success { background: #d4edda; color: #155724; padding: 12px; border-radius: 12px; margin-bottom: 20px; display: none; }
+        .error { background: #f8d7da; color: #721c24; padding: 12px; border-radius: 12px; margin-bottom: 20px; display: none; }
         @media (max-width: 700px) { th, td { font-size: 0.8rem; padding: 10px; } input { width: 70px; } button { padding: 6px 12px; font-size: 0.7rem; } }
     </style>
 </head>
@@ -29,7 +31,13 @@
 <div class="container">
     <h1>💒 Admin Mariage Joël & Nadège</h1>
     <div class="sub">📋 Liste des invités ayant confirmé (depuis Google Sheets) · Envoi manuel des numéros de table</div>
+    
+    <div id="successMsg" class="success"></div>
+    <div id="errorMsg" class="error"></div>
+    
     <button class="refresh" onclick="chargerDepuisSheet()">🔄 Synchroniser avec Google Sheets</button>
+    <button class="refresh" onclick="ajouterManuellement()" style="background: #c2854b; margin-left: 10px;">➕ Ajouter manuellement</button>
+    
     <div id="tableContainer">
         <div class="loading">⏳ Chargement des confirmations...</div>
     </div>
@@ -38,16 +46,41 @@
         • Les confirmations des invités sont automatiquement envoyées dans votre Google Sheet.<br>
         • Cliquez sur "Synchroniser" pour voir les nouvelles confirmations.<br>
         • Attribuez un numéro de table à chaque invité, puis cliquez sur WhatsApp ou SMS pour envoyer.<br>
-        • Les numéros attribués sont sauvegardés dans votre navigateur.
+        • Les numéros attribués sont sauvegardés dans votre navigateur.<br>
+        • Vous pouvez aussi ajouter des confirmations manuellement (si quelqu'un confirme par téléphone).
     </div>
 </div>
 
 <script>
     // 🔴 REMPLACEZ PAR L'URL DE VOTRE APPS SCRIPT (doGet)
-    const SHEET_DATA_URL = "https://script.google.com/macros/s/AKfycbyVthmEcNEL2FSEGd_ALIAValzfJH_tfgxNN8Q7jJBbkVIsSePZdemWjmCsHhjnVpSL/exec";
+    const SHEET_DATA_URL = "https://script.google.com/macros/s/CE_QUE_VOUS_AVEZ_COPIE/exec";
     
     let confirmations = [];
     let tablesAttribuees = {};
+
+    function showSuccess(msg) {
+        const el = document.getElementById('successMsg');
+        el.textContent = msg;
+        el.style.display = 'block';
+        setTimeout(() => el.style.display = 'none', 3000);
+    }
+
+    function showError(msg) {
+        const el = document.getElementById('errorMsg');
+        el.textContent = msg;
+        el.style.display = 'block';
+        setTimeout(() => el.style.display = 'none', 5000);
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
 
     function chargerTablesSauvegardees() {
         const saved = localStorage.getItem('admin_tables_mariage');
@@ -58,50 +91,158 @@
         localStorage.setItem('admin_tables_mariage', JSON.stringify(tablesAttribuees));
     }
 
+    function majTable(telephone, tableValue) {
+        tablesAttribuees[telephone] = tableValue;
+        sauvegarderTables();
+        // Mettre à jour dans confirmations
+        const inv = confirmations.find(c => c.telephone === telephone);
+        if(inv) inv.table = tableValue;
+        showSuccess(`Table ${tableValue} attribuée à ${telephone}`);
+    }
+
     async function chargerDepuisSheet() {
         const container = document.getElementById('tableContainer');
         container.innerHTML = '<div class="loading">⏳ Synchronisation en cours...</div>';
         
         try {
             const response = await fetch(SHEET_DATA_URL);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
             
-            // data[0] sont les en-têtes, à partir de data[1] les lignes
-            // Format: [Horodatage, Nom, Téléphone, Table, Statut]
             confirmations = [];
-            for(let i = 1; i < data.length; i++) {
-                const ligne = data[i];
-                if(ligne[1] && ligne[1] !== "") { // Si un nom existe
-                    confirmations.push({
-                        id: i,
-                        nom: ligne[1],
-                        telephone: ligne[2],
-                        date: ligne[0],
-                        table: tablesAttribuees[ligne[2]] || ligne[3] || ""
-                    });
+            if (Array.isArray(data)) {
+                for(let i = 1; i < data.length; i++) {
+                    const ligne = data[i];
+                    if(ligne && ligne[1] && ligne[1] !== "") {
+                        confirmations.push({
+                            id: i,
+                            nom: ligne[1],
+                            telephone: ligne[2],
+                            date: ligne[0] || new Date().toISOString(),
+                            table: tablesAttribuees[ligne[2]] || ligne[3] || ""
+                        });
+                    }
                 }
             }
             afficherTableau();
+            showSuccess(`✅ ${confirmations.length} confirmation(s) chargée(s)`);
         } catch(error) {
             console.error(error);
-            container.innerHTML = `<div class="empty">❌ Erreur de chargement. Vérifiez que votre Apps Script est bien déployé et que l'URL est correcte.<br><br>URL actuelle : ${SHEET_DATA_URL}</div>`;
+            container.innerHTML = `<div class="empty">❌ Erreur de chargement. Vérifiez que votre Apps Script est bien déployé et que l'URL est correcte.<br><br>URL actuelle : ${SHEET_DATA_URL}<br><br>💡 Conseil : ouvrez cette URL dans un autre onglet pour vérifier qu'elle renvoie bien des données JSON.</div>`;
+            showError("Impossible de charger les données. Vérifiez l'URL du script Google Apps Script.");
         }
     }
 
     function afficherTableau() {
         const container = document.getElementById('tableContainer');
         if(confirmations.length === 0) {
-            container.innerHTML = `<div class="empty">📭 Aucune confirmation pour l'instant.<br>Les invités doivent confirmer sur la carte publique.</div>`;
+            container.innerHTML = `<div class="empty">📭 Aucune confirmation pour l'instant.<br>Les invités doivent confirmer sur la carte publique.<br><br>➕ Vous pouvez aussi ajouter des confirmations manuellement avec le bouton ci-dessus.</div>`;
             return;
         }
         
-        let html = `<tr><thead><tr><th>Nom</th><th>Téléphone</th><th>Date confirmation</th><th>Numéro table</th><th>Action</th></tr></thead><tbody>`;
+        let html = `<table><thead><tr><th>Nom</th><th>Téléphone</th><th>Date confirmation</th><th>Numéro table</th><th>Action</th></tr></thead><tbody>`;
         confirmations.forEach((inv, idx) => {
+            const telClean = inv.telephone ? inv.telephone.replace(/[^0-9+]/g, '') : '';
             html += `<tr>
                 <td><strong>${escapeHtml(inv.nom)}</strong></td>
                 <td>${escapeHtml(inv.telephone)}</td>
-                <td>${new Date(inv.date).toLocaleString()}</td>
-                <td><input type="number" id="table-${idx}" value="${inv.table || ''}" placeholder="N°" onchange="majTable('${inv.telephone}', this.value)"></td>
+                <td>${inv.date ? new Date(inv.date).toLocaleString() : 'N/A'}</td>
+                <td><input type="number" id="table-${idx}" value="${inv.table || ''}" placeholder="N°" onchange="majTable('${escapeHtml(inv.telephone)}', this.value)"></td>
                 <td>
-                    <button onclick="envoyerNumero('${inv.telephone}', '${escapeHtml(inv.nom)}', document.getElementById('table-${idx}').value, false)">📱 WhatsApp</button>
-                    <button class="btn-sms" onclick="envoyerNumero('${inv.telephone}', '${escapeHtml(inv.nom)}', document.getElementById('table-${idx}').value, true)">✉
+                    <button onclick="envoyerNumero('${escapeHtml(telClean)}', '${escapeHtml(inv.nom)}', document.getElementById('table-${idx}').value, false)">📱 WhatsApp</button>
+                    <button class="btn-sms" onclick="envoyerNumero('${escapeHtml(telClean)}', '${escapeHtml(inv.nom)}', document.getElementById('table-${idx}').value, true)">✉️ SMS</button>
+                </td>
+            </tr>`;
+        });
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
+
+    function envoyerNumero(telephone, nom, table, isSms = false) {
+        if(!table || table === "") {
+            alert("❌ Entrez d'abord un numéro de table pour cet invité");
+            return;
+        }
+        if(!telephone || telephone === "") {
+            alert("❌ Numéro de téléphone manquant pour cet invité");
+            return;
+        }
+        
+        // Nettoyer le numéro
+        let numero = telephone.toString().replace(/\s/g, '');
+        if (!numero.startsWith('+') && !numero.startsWith('00')) {
+            // Si pas d'indicateur pays, ajouter +226 par défaut (Burkina Faso)
+            if (!numero.startsWith('226') && numero.length <= 8) {
+                numero = '+226' + numero;
+            }
+        }
+        
+        const message = encodeURIComponent(`✨ Bonjour ${nom} ! ✨\n\nVotre numéro de table pour le mariage de Joël & Nadège est le : ${table}\n\n📅 Rendez-vous le 6 juin 2026 à 15h au CCB Saint Abraham. 🥂\n🍽️ Lunch à 17h à La Coccinel.\n\nA très vite ! 💫`);
+        
+        let lien;
+        if (isSms) {
+            lien = `sms:${numero}?body=${message}`;
+        } else {
+            // WhatsApp
+            let waNumero = numero.replace(/[^0-9]/g, '');
+            if (waNumero.startsWith('226')) waNumero = waNumero;
+            else if (waNumero.length === 8) waNumero = '226' + waNumero;
+            lien = `https://wa.me/${waNumero}?text=${message}`;
+        }
+        
+        window.open(lien, '_blank');
+        
+        // Sauvegarder la table attribuée
+        majTable(telephone, table);
+        
+        // Petite animation visuelle
+        const btn = event ? event.target : null;
+        if(btn) {
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => { if(btn) btn.style.transform = ''; }, 200);
+        }
+    }
+
+    function ajouterManuellement() {
+        const nom = prompt("💫 Nom complet de l'invité :");
+        if(!nom || nom.trim() === "") return;
+        
+        const telephone = prompt("📱 Numéro WhatsApp (ex: +226XXXXXXXX ou 70XXXXXX) :");
+        if(!telephone || telephone.trim() === "") return;
+        
+        const confirmation = {
+            id: Date.now(),
+            nom: nom.trim(),
+            telephone: telephone.trim(),
+            date: new Date().toISOString(),
+            table: ""
+        };
+        
+        confirmations.unshift(confirmation); // Ajouter au début
+        afficherTableau();
+        showSuccess(`✅ Invité ajouté : ${nom}`);
+        
+        // Option : sauvegarder aussi dans localStorage
+        const manuels = JSON.parse(localStorage.getItem('admin_manuels') || '[]');
+        manuels.push(confirmation);
+        localStorage.setItem('admin_manuels', JSON.stringify(manuels));
+    }
+
+    // Charger les sauvegardes et les manuels au démarrage
+    function chargerManuels() {
+        const manuels = JSON.parse(localStorage.getItem('admin_manuels') || '[]');
+        manuels.forEach(m => {
+            if(!confirmations.find(c => c.telephone === m.telephone)) {
+                confirmations.push(m);
+            }
+        });
+        afficherTableau();
+    }
+
+    // Initialisation
+    chargerTablesSauvegardees();
+    chargerDepuisSheet();
+    chargerManuels();
+</script>
+</body>
+</html>
