@@ -50,7 +50,7 @@
         • Cliquez sur "Synchroniser" pour voir les nouvelles confirmations.<br>
         • Attribuez un numéro de table à chaque invité, puis cliquez sur WhatsApp ou SMS pour envoyer.<br>
         • Les numéros attribués sont sauvegardés dans votre navigateur.<br>
-        • Vous pouvez aussi ajouter des confirmations manuellement (si quelqu'un confirme par téléphone).
+        • Vous pouvez aussi ajouter des confirmations manuellement.
     </div>
 </div>
 
@@ -123,9 +123,8 @@
             
             console.log("Données reçues :", rawData);
             
-            confirmations = [];
+            const nouvellesConfirmations = [];
             
-            // Gérer différents formats possibles
             let dataArray = [];
             if (Array.isArray(rawData)) {
                 dataArray = rawData;
@@ -135,44 +134,58 @@
                 throw new Error("Format de données inattendu");
             }
             
-            if (dataArray.length === 0) {
-                container.innerHTML = `<div class="empty">📭 Le Google Sheet est vide.<br>Ajoutez une ligne de test manuellement dans votre Sheet.</div>`;
-                showError("Le Google Sheet ne contient aucune donnée");
-                return;
-            }
-            
-            // La première ligne est l'en-tête, on commence à la ligne 1
-            for(let i = 1; i < dataArray.length; i++) {
-                const ligne = dataArray[i];
-                if (ligne && ligne.length >= 2 && ligne[1] && ligne[1] !== "") {
-                    confirmations.push({
-                        id: i,
-                        nom: ligne[1] || "Inconnu",
-                        telephone: ligne[2] || "",
-                        date: ligne[0] || new Date().toISOString(),
-                        table: tablesAttribuees[ligne[2]] || (ligne[3] || "")
-                    });
+            if (dataArray.length > 1) {
+                for(let i = 1; i < dataArray.length; i++) {
+                    const ligne = dataArray[i];
+                    if (ligne && ligne.length >= 2 && ligne[1] && ligne[1] !== "") {
+                        nouvellesConfirmations.push({
+                            id: i,
+                            nom: ligne[1] || "Inconnu",
+                            telephone: ligne[2] || "",
+                            date: ligne[0] || new Date().toISOString(),
+                            table: tablesAttribuees[ligne[2]] || (ligne[3] || "")
+                        });
+                    }
                 }
             }
             
+            // Fusionner avec les manuels (sans doublons)
+            const manuels = JSON.parse(localStorage.getItem('admin_manuels') || '[]');
+            const tousLesTelephones = new Set(nouvellesConfirmations.map(c => c.telephone));
+            
+            manuels.forEach(m => {
+                if (!tousLesTelephones.has(m.telephone)) {
+                    nouvellesConfirmations.push(m);
+                }
+            });
+            
+            confirmations = nouvellesConfirmations;
             afficherTableau();
             showSuccess(`✅ ${confirmations.length} confirmation(s) chargée(s)`);
             
         } catch(error) {
             console.error(error);
-            container.innerHTML = `<div class="empty">❌ Erreur de chargement.<br><br>URL : ${SHEET_DATA_URL}<br><br>Message : ${error.message}<br><br>💡 Ouvrez l'URL dans un autre onglet pour voir ce que renvoie le script.</div>`;
-            showError("Impossible de charger les données. Cliquez sur 'Debug' pour voir les détails.");
+            // En cas d'erreur, afficher au moins les manuels
+            const manuels = JSON.parse(localStorage.getItem('admin_manuels') || '[]');
+            if (manuels.length > 0) {
+                confirmations = manuels;
+                afficherTableau();
+                showError(`⚠️ Google Sheet inaccessible. ${manuels.length} confirmation(s) locale(s) affichée(s).`);
+            } else {
+                container.innerHTML = `<div class="empty">❌ Erreur de chargement.<br><br>Message : ${error.message}<br><br>💡 Cliquez sur "Debug" pour voir les détails.</div>`;
+                showError("Impossible de charger les données depuis Google Sheets.");
+            }
         }
     }
 
     function afficherTableau() {
         const container = document.getElementById('tableContainer');
         if(confirmations.length === 0) {
-            container.innerHTML = `<div class="empty">📭 Aucune confirmation pour l'instant.<br><br>➡️ Vérifiez que votre Google Sheet contient des données.<br>➡️ Testez : ajoutez une ligne manuellement dans votre Sheet, puis synchronisez.</div>`;
+            container.innerHTML = `<div class="empty">📭 Aucune confirmation pour l'instant.<br><br>➡️ Cliquez sur "Synchroniser" pour charger les données du Google Sheet.<br>➡️ Ou ajoutez des invités manuellement.</div>`;
             return;
         }
         
-        let html = `<div style="overflow-x: auto;"><table><thead><tr><th>Nom</th><th>Téléphone</th><th>Date confirmation</th><th>Numéro table</th><th>Action</th></tr></thead><tbody>`;
+        let html = `<div style="overflow-x: auto;"><tr><thead>汽<th>Nom</th><th>Téléphone</th><th>Date confirmation</th><th>Numéro table</th><th>Action</th></tr></thead><tbody>`;
         
         confirmations.forEach((inv, idx) => {
             const telClean = inv.telephone ? String(inv.telephone).replace(/[^0-9+]/g, '') : '';
@@ -208,7 +221,7 @@
             }
         }
         
-        const message = encodeURIComponent(`✨ Bonjour ${nom} ! ✨\n\nVotre numéro de table pour le mariage de Joël & Nadège est le : ${table}\n\n📅 Rendez-vous le 6 juin 2026 à 15h au CCB Saint Abraham. 🥂\n🍽️ Lunch à 17h à La Coccinel.\n\nA très vite ! 💫`);
+        const message = encodeURIComponent(`🌹 Bonjour ${nom} 🌹! \n\nVotre numéro de table pour le mariage de Joël & Nadège est le : ${table}\n\n📆 Rendez-vous le 6 juin 2026 à 15h à la CCB Saint Abraham.\n Lunch à 17h à La Coccinel.\n\nA très vite !\nUnion de prière `);
         
         let lien;
         if (isSms) {
@@ -247,20 +260,9 @@
         localStorage.setItem('admin_manuels', JSON.stringify(manuels));
     }
 
-    function chargerManuels() {
-        const manuels = JSON.parse(localStorage.getItem('admin_manuels') || '[]');
-        manuels.forEach(m => {
-            if(!confirmations.find(c => c.telephone === m.telephone)) {
-                confirmations.push(m);
-            }
-        });
-        afficherTableau();
-    }
-
-    // Initialisation
+    // Initialisation unique
     chargerTablesSauvegardees();
     chargerDepuisSheet();
-    chargerManuels();
 </script>
 </body>
 </html>
