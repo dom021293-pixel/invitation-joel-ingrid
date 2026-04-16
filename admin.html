@@ -24,7 +24,6 @@
         .loading { text-align: center; padding: 40px; }
         .success { background: #d4edda; color: #155724; padding: 12px; border-radius: 12px; margin-bottom: 20px; display: none; }
         .error { background: #f8d7da; color: #721c24; padding: 12px; border-radius: 12px; margin-bottom: 20px; display: none; }
-        .debug { background: #e7e7e7; color: #333; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-family: monospace; font-size: 11px; word-break: break-all; display: none; }
         @media (max-width: 700px) { th, td { font-size: 0.8rem; padding: 10px; } input { width: 70px; } button { padding: 6px 12px; font-size: 0.7rem; } }
     </style>
 </head>
@@ -35,11 +34,9 @@
     
     <div id="successMsg" class="success"></div>
     <div id="errorMsg" class="error"></div>
-    <div id="debugMsg" class="debug"></div>
     
-    <button class="refresh" onclick="chargerDepuisSheet()">🔄 Synchroniser avec Google Sheets</button>
-    <button class="refresh" onclick="ajouterManuellement()" style="background: #c2854b; margin-left: 10px;">➕ Ajouter manuellement</button>
-    <button class="refresh" onclick="voirDebug()" style="background: #555; margin-left: 10px;">🐛 Debug</button>
+    <button class="refresh" id="syncBtn">🔄 Synchroniser avec Google Sheets</button>
+    <button class="refresh" id="addManuelBtn" style="background: #c2854b; margin-left: 10px;">➕ Ajouter manuellement</button>
     
     <div id="tableContainer">
         <div class="loading">⏳ Chargement des confirmations...</div>
@@ -59,7 +56,6 @@
     
     let confirmations = [];
     let tablesAttribuees = {};
-    let rawData = null;
 
     function showSuccess(msg) {
         const el = document.getElementById('successMsg');
@@ -73,16 +69,6 @@
         el.textContent = msg;
         el.style.display = 'block';
         setTimeout(() => el.style.display = 'none', 5000);
-    }
-
-    function voirDebug() {
-        const el = document.getElementById('debugMsg');
-        if (el.style.display === 'block') {
-            el.style.display = 'none';
-        } else {
-            el.innerHTML = `<strong>🔍 Données brutes du script :</strong><br><pre>${JSON.stringify(rawData, null, 2)}</pre>`;
-            el.style.display = 'block';
-        }
     }
 
     function escapeHtml(str) {
@@ -110,6 +96,7 @@
         const inv = confirmations.find(c => c.telephone === telephone);
         if(inv) inv.table = tableValue;
         showSuccess(`Table ${tableValue} attribuée à ${telephone}`);
+        afficherTableau(); // Re-raffraîchir l'affichage
     }
 
     async function chargerDepuisSheet() {
@@ -119,24 +106,15 @@
         try {
             const response = await fetch(SHEET_DATA_URL);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            rawData = await response.json();
+            const data = await response.json();
             
-            console.log("Données reçues :", rawData);
+            console.log("Données reçues :", data);
             
             const nouvellesConfirmations = [];
             
-            let dataArray = [];
-            if (Array.isArray(rawData)) {
-                dataArray = rawData;
-            } else if (rawData.data && Array.isArray(rawData.data)) {
-                dataArray = rawData.data;
-            } else {
-                throw new Error("Format de données inattendu");
-            }
-            
-            if (dataArray.length > 1) {
-                for(let i = 1; i < dataArray.length; i++) {
-                    const ligne = dataArray[i];
+            if (Array.isArray(data) && data.length > 1) {
+                for(let i = 1; i < data.length; i++) {
+                    const ligne = data[i];
                     if (ligne && ligne.length >= 2 && ligne[1] && ligne[1] !== "") {
                         nouvellesConfirmations.push({
                             id: i,
@@ -149,59 +127,94 @@
                 }
             }
             
-            // Fusionner avec les manuels (sans doublons)
-            const manuels = JSON.parse(localStorage.getItem('admin_manuels') || '[]');
-            const tousLesTelephones = new Set(nouvellesConfirmations.map(c => c.telephone));
-            
-            manuels.forEach(m => {
-                if (!tousLesTelephones.has(m.telephone)) {
-                    nouvellesConfirmations.push(m);
-                }
-            });
-            
             confirmations = nouvellesConfirmations;
             afficherTableau();
             showSuccess(`✅ ${confirmations.length} confirmation(s) chargée(s)`);
             
         } catch(error) {
             console.error(error);
-            // En cas d'erreur, afficher au moins les manuels
-            const manuels = JSON.parse(localStorage.getItem('admin_manuels') || '[]');
-            if (manuels.length > 0) {
-                confirmations = manuels;
-                afficherTableau();
-                showError(`⚠️ Google Sheet inaccessible. ${manuels.length} confirmation(s) locale(s) affichée(s).`);
-            } else {
-                container.innerHTML = `<div class="empty">❌ Erreur de chargement.<br><br>Message : ${error.message}<br><br>💡 Cliquez sur "Debug" pour voir les détails.</div>`;
-                showError("Impossible de charger les données depuis Google Sheets.");
-            }
+            container.innerHTML = `<div class="empty">❌ Erreur de chargement.<br><br>Message : ${error.message}<br><br>💡 Vérifiez que votre Google Sheets est bien accessible et contient des données.</div>`;
+            showError("Impossible de charger les données depuis Google Sheets.");
         }
     }
 
     function afficherTableau() {
         const container = document.getElementById('tableContainer');
+        if(!container) return;
+        
         if(confirmations.length === 0) {
-            container.innerHTML = `<div class="empty">📭 Aucune confirmation pour l'instant.<br><br>➡️ Cliquez sur "Synchroniser" pour charger les données du Google Sheet.<br>➡️ Ou ajoutez des invités manuellement.</div>`;
+            container.innerHTML = `<div class="empty">📭 Aucune confirmation pour l'instant.<br><br>➡️ Cliquez sur "Synchroniser" pour charger les données du Google Sheet.</div>`;
             return;
         }
         
-        let html = `<div style="overflow-x: auto;"><tr><thead>汽<th>Nom</th><th>Téléphone</th><th>Date confirmation</th><th>Numéro table</th><th>Action</th></tr></thead><tbody>`;
+        let html = `<div style="overflow-x: auto;"><table><thead>
+            <tr>
+                <th>Nom</th>
+                <th>Téléphone</th>
+                <th>Date confirmation</th>
+                <th>Numéro table</th>
+                <th>Action</th>
+            </tr>
+        </thead><tbody>`;
         
         confirmations.forEach((inv, idx) => {
             const telClean = inv.telephone ? String(inv.telephone).replace(/[^0-9+]/g, '') : '';
-            html += `<tr>
+            const tableValue = inv.table || '';
+            html += `
+            <tr>
                 <td><strong>${escapeHtml(inv.nom)}</strong></td>
                 <td>${escapeHtml(inv.telephone)}</td>
                 <td>${inv.date ? new Date(inv.date).toLocaleString() : 'N/A'}</td>
-                <td><input type="number" id="table-${idx}" value="${inv.table || ''}" placeholder="N°" onchange="majTable('${escapeHtml(inv.telephone)}', this.value)"></td>
+                <td><input type="number" class="table-input" data-telephone="${escapeHtml(inv.telephone)}" value="${tableValue}" placeholder="N°"></td>
                 <td>
-                    <button onclick="envoyerNumero('${escapeHtml(telClean)}', '${escapeHtml(inv.nom)}', document.getElementById('table-${idx}').value, false)">📱 WhatsApp</button>
-                    <button class="btn-sms" onclick="envoyerNumero('${escapeHtml(telClean)}', '${escapeHtml(inv.nom)}', document.getElementById('table-${idx}').value, true)">✉️ SMS</button>
+                    <button class="btn-wa" data-telephone="${escapeHtml(telClean)}" data-nom="${escapeHtml(inv.nom)}">📱 WhatsApp</button>
+                    <button class="btn-sms" data-telephone="${escapeHtml(telClean)}" data-nom="${escapeHtml(inv.nom)}">✉️ SMS</button>
                 </td>
             </tr>`;
         });
         html += `</tbody></table></div>`;
         container.innerHTML = html;
+        
+        // Attacher les événements après l'ajout au DOM
+        document.querySelectorAll('.table-input').forEach(input => {
+            input.removeEventListener('change', handleTableChange);
+            input.addEventListener('change', handleTableChange);
+        });
+        
+        document.querySelectorAll('.btn-wa').forEach(btn => {
+            btn.removeEventListener('click', handleWhatsApp);
+            btn.addEventListener('click', handleWhatsApp);
+        });
+        
+        document.querySelectorAll('.btn-sms').forEach(btn => {
+            btn.removeEventListener('click', handleSMS);
+            btn.addEventListener('click', handleSMS);
+        });
+    }
+    
+    function handleTableChange(event) {
+        const input = event.target;
+        const telephone = input.getAttribute('data-telephone');
+        const tableValue = input.value;
+        majTable(telephone, tableValue);
+    }
+    
+    function handleWhatsApp(event) {
+        const btn = event.currentTarget;
+        const telephone = btn.getAttribute('data-telephone');
+        const nom = btn.getAttribute('data-nom');
+        const inv = confirmations.find(c => c.telephone === telephone);
+        const table = inv ? inv.table : '';
+        envoyerNumero(telephone, nom, table, false);
+    }
+    
+    function handleSMS(event) {
+        const btn = event.currentTarget;
+        const telephone = btn.getAttribute('data-telephone');
+        const nom = btn.getAttribute('data-nom');
+        const inv = confirmations.find(c => c.telephone === telephone);
+        const table = inv ? inv.table : '';
+        envoyerNumero(telephone, nom, table, true);
     }
 
     function envoyerNumero(telephone, nom, table, isSms = false) {
@@ -221,7 +234,7 @@
             }
         }
         
-        const message = encodeURIComponent(`🌹 Bonjour ${nom} 🌹! \n\nVotre numéro de table pour le mariage de Joël & Nadège est le : ${table}\n\n📆 Rendez-vous le 6 juin 2026 à 15h à la CCB Saint Abraham.\n Lunch à 17h à La Coccinel.\n\nA très vite !\nUnion de prière `);
+        const message = encodeURIComponent(` Bonjour ${nom} ! \n\nVotre numéro de table pour le mariage de Joël & Nadège est le : ${table}\n\n Rendez-vous le 6 juin 2026 à 15h à la CCB Saint Abraham. \n Lunch à 17h à La Coccinel.\n\nA très vite !\n\nUnion de prière `);
         
         let lien;
         if (isSms) {
@@ -233,7 +246,6 @@
         }
         
         window.open(lien, '_blank');
-        majTable(telephone, table);
     }
 
     function ajouterManuellement() {
@@ -255,14 +267,28 @@
         afficherTableau();
         showSuccess(`✅ Invité ajouté : ${nom}`);
         
+        // Sauvegarder les manuels
         const manuels = JSON.parse(localStorage.getItem('admin_manuels') || '[]');
         manuels.push(confirmation);
         localStorage.setItem('admin_manuels', JSON.stringify(manuels));
     }
 
-    // Initialisation unique
+    // Initialisation
     chargerTablesSauvegardees();
-    chargerDepuisSheet();
+    
+    // Boutons
+    document.getElementById('syncBtn').addEventListener('click', chargerDepuisSheet);
+    document.getElementById('addManuelBtn').addEventListener('click', ajouterManuellement);
+    
+    // Chargement manuels au démarrage
+    const manuels = JSON.parse(localStorage.getItem('admin_manuels') || '[]');
+    if(manuels.length > 0) {
+        confirmations = manuels;
+        afficherTableau();
+    } else {
+        // Chargement auto depuis Sheet
+        chargerDepuisSheet();
+    }
 </script>
 </body>
 </html>
