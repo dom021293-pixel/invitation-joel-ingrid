@@ -24,6 +24,7 @@
         .loading { text-align: center; padding: 40px; }
         .success { background: #d4edda; color: #155724; padding: 12px; border-radius: 12px; margin-bottom: 20px; display: none; }
         .error { background: #f8d7da; color: #721c24; padding: 12px; border-radius: 12px; margin-bottom: 20px; display: none; }
+        .debug-info { background: #e7e7e7; color: #333; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-family: monospace; font-size: 11px; word-break: break-all; display: none; }
         @media (max-width: 700px) { th, td { font-size: 0.8rem; padding: 10px; } input { width: 70px; } button { padding: 6px 12px; font-size: 0.7rem; } }
     </style>
 </head>
@@ -36,10 +37,12 @@
     <div id="errorMsg" class="error"></div>
     
     <button class="refresh" id="syncBtn">🔄 Synchroniser avec Google Sheets</button>
+    <button class="refresh" id="debugBtn" style="background: #555; margin-left: 10px;">🐛 Voir debug</button>
     
     <div id="tableContainer">
         <div class="loading">⏳ Chargement des confirmations...</div>
     </div>
+    <div id="debugInfo" class="debug-info"></div>
     <div class="note">
         <strong>📌 Comment ça fonctionne ?</strong><br>
         • Les confirmations des invités sont automatiquement envoyées dans votre Google Sheet.<br>
@@ -71,12 +74,11 @@
 
     function nettoyerTelephone(tel) {
         if (!tel) return "";
-        // Enlève tous les caractères sauf les chiffres et le +
         let nettoye = String(tel).replace(/[^0-9+]/g, '');
-        // Si le numéro commence par ± ou autre, on garde juste les chiffres
+        if (nettoye === "") return tel;
         if (nettoye.startsWith('+')) return nettoye;
-        // Si c'est un numéro local (8 chiffres), ajouter +226
         if (nettoye.length === 8) return '+226' + nettoye;
+        if (nettoye.length === 9 && nettoye.startsWith('0')) return '+226' + nettoye.substring(1);
         return nettoye;
     }
 
@@ -118,27 +120,32 @@
             const data = await response.json();
             
             console.log("Données brutes reçues :", data);
+            document.getElementById('debugInfo').innerHTML = `<strong>🔍 Données reçues :</strong><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
             
             const nouvellesConfirmations = [];
             
+            // Vérifier que data est un tableau
             if (Array.isArray(data)) {
-                // Parcourir toutes les lignes (commencer à 0 si pas d'en-tête, ou 1 si en-tête)
-                // D'après vos données, la ligne 0 contient déjà une vraie confirmation
+                // Parcourir chaque ligne
                 for(let i = 0; i < data.length; i++) {
                     const ligne = data[i];
-                    if (ligne && ligne.length >= 2) {
+                    // Vérifier que la ligne est un tableau et a au moins 2 éléments
+                    if (Array.isArray(ligne) && ligne.length >= 2) {
+                        const date = ligne[0];
                         const nom = ligne[1];
-                        const telephoneBrut = ligne[2];
-                        // Vérifier que le nom n'est pas un en-tête (éviter "Nom" ou vide)
-                        if (nom && nom !== "" && nom !== "Nom" && nom !== "NOM") {
+                        const telephoneBrut = ligne[2] || "";
+                        const tableExistante = ligne[3] || "";
+                        
+                        // Vérifier que le nom existe et n'est pas un en-tête
+                        if (nom && nom !== "" && nom !== "Nom" && nom !== "NOM" && nom !== "nom") {
                             const telephoneClean = nettoyerTelephone(telephoneBrut);
                             nouvellesConfirmations.push({
                                 id: i,
                                 nom: nom,
                                 telephone: telephoneClean,
                                 telephoneBrut: telephoneBrut,
-                                date: ligne[0] || new Date().toISOString(),
-                                table: tablesAttribuees[telephoneClean] || (ligne[3] || "")
+                                date: date,
+                                table: tablesAttribuees[telephoneClean] || tableExistante
                             });
                         }
                     }
@@ -147,15 +154,16 @@
             
             confirmations = nouvellesConfirmations;
             afficherTableau();
-            showSuccess(`✅ ${confirmations.length} confirmation(s) chargée(s) depuis Google Sheets`);
             
-            if (confirmations.length === 0) {
-                container.innerHTML = '<div class="empty">📭 Aucune confirmation trouvée dans le Google Sheet.<br><br>➡️ Vérifiez que votre Sheet contient des données (colonne 1 = date, colonne 2 = nom, colonne 3 = téléphone).</div>';
+            if (confirmations.length > 0) {
+                showSuccess(`✅ ${confirmations.length} confirmation(s) chargée(s) depuis Google Sheets`);
+            } else {
+                container.innerHTML = '<div class="empty">📭 Aucune confirmation trouvée dans le Google Sheet.<br><br>➡️ Les données reçues : ' + JSON.stringify(data) + '</div>';
             }
             
         } catch(error) {
             console.error(error);
-            container.innerHTML = `<div class="empty">❌ Erreur de chargement.<br><br>Message : ${error.message}<br><br>💡 Vérifiez que votre Google Sheets est bien accessible.</div>`;
+            container.innerHTML = `<div class="empty">❌ Erreur de chargement.<br><br>Message : ${error.message}</div>`;
             showError("Impossible de charger les données depuis Google Sheets.");
         }
     }
@@ -165,7 +173,6 @@
         if(!container) return;
         
         if(confirmations.length === 0) {
-            container.innerHTML = `<div class="empty">📭 Aucune confirmation pour l'instant.<br><br>➡️ Cliquez sur "Synchroniser" pour charger les données du Google Sheet.</div>`;
             return;
         }
         
@@ -183,12 +190,13 @@
             const telClean = inv.telephone || '';
             const tableValue = inv.table || '';
             const dateFormatee = inv.date ? new Date(inv.date).toLocaleString() : 'N/A';
+            const affichageTel = inv.telephoneBrut || inv.telephone;
             html += `
             <tr>
                 <td><strong>${escapeHtml(inv.nom)}</strong></td>
-                <td>${escapeHtml(inv.telephoneBrut || inv.telephone)}</td>
+                <td>${escapeHtml(affichageTel)}</td>
                 <td>${dateFormatee}</td>
-                <td><input type="number" class="table-input" data-telephone="${escapeHtml(telClean)}" value="${tableValue}" placeholder="N°"></td>
+                <td><input type="number" class="table-input" data-telephone="${escapeHtml(telClean)}" value="${tableValue}" placeholder="N°" style="width:80px;"></td>
                 <td>
                     <button class="btn-wa" data-telephone="${escapeHtml(telClean)}" data-nom="${escapeHtml(inv.nom)}">📱 WhatsApp</button>
                     <button class="btn-sms" data-telephone="${escapeHtml(telClean)}" data-nom="${escapeHtml(inv.nom)}">✉️ SMS</button>
@@ -256,7 +264,7 @@
             }
         }
         
-        const message = encodeURIComponent(` Bonjour ${nom} ! \n\nVotre numéro de table pour le mariage de Joël & Nadège est le : ${table}\n\n Rendez-vous le 6 juin 2026 à 15h à la CCB Saint Abraham. \n Lunch à 17h à La Coccinel.\n\nA très vite !\n\nUnion de prière `);
+        const message = encodeURIComponent(`✨ Bonjour ${nom} ! ✨\n\nVotre numéro de table pour le mariage de Joël & Nadège est le : ${table}\n\n📅 Rendez-vous le 6 juin 2026 à 15h au CCB Saint Abraham. 🥂\n🍽️ Lunch à 17h à La Coccinel.\n\nA très vite ! 💫`);
         
         let lien;
         if (isSms) {
@@ -275,6 +283,10 @@
     chargerDepuisSheet();
     
     document.getElementById('syncBtn').addEventListener('click', chargerDepuisSheet);
+    document.getElementById('debugBtn').addEventListener('click', () => {
+        const debugDiv = document.getElementById('debugInfo');
+        debugDiv.style.display = debugDiv.style.display === 'block' ? 'none' : 'block';
+    });
 </script>
 </body>
 </html>
