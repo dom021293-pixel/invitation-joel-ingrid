@@ -36,7 +36,6 @@
     <div id="errorMsg" class="error"></div>
     
     <button class="refresh" id="syncBtn">🔄 Synchroniser avec Google Sheets</button>
-    <button class="refresh" id="addManuelBtn" style="background: #c2854b; margin-left: 10px;">➕ Ajouter manuellement</button>
     
     <div id="tableContainer">
         <div class="loading">⏳ Chargement des confirmations...</div>
@@ -46,8 +45,7 @@
         • Les confirmations des invités sont automatiquement envoyées dans votre Google Sheet.<br>
         • Cliquez sur "Synchroniser" pour voir les nouvelles confirmations.<br>
         • Attribuez un numéro de table à chaque invité, puis cliquez sur WhatsApp ou SMS pour envoyer.<br>
-        • Les numéros attribués sont sauvegardés dans votre navigateur.<br>
-        • Vous pouvez aussi ajouter des confirmations manuellement.
+        • Les numéros attribués sont sauvegardés dans votre navigateur.
     </div>
 </div>
 
@@ -69,6 +67,17 @@
         el.textContent = msg;
         el.style.display = 'block';
         setTimeout(() => el.style.display = 'none', 5000);
+    }
+
+    function nettoyerTelephone(tel) {
+        if (!tel) return "";
+        // Enlève tous les caractères sauf les chiffres et le +
+        let nettoye = String(tel).replace(/[^0-9+]/g, '');
+        // Si le numéro commence par ± ou autre, on garde juste les chiffres
+        if (nettoye.startsWith('+')) return nettoye;
+        // Si c'est un numéro local (8 chiffres), ajouter +226
+        if (nettoye.length === 8) return '+226' + nettoye;
+        return nettoye;
     }
 
     function escapeHtml(str) {
@@ -96,7 +105,7 @@
         const inv = confirmations.find(c => c.telephone === telephone);
         if(inv) inv.table = tableValue;
         showSuccess(`Table ${tableValue} attribuée à ${telephone}`);
-        afficherTableau(); // Re-raffraîchir l'affichage
+        afficherTableau();
     }
 
     async function chargerDepuisSheet() {
@@ -108,32 +117,45 @@
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
             
-            console.log("Données reçues :", data);
+            console.log("Données brutes reçues :", data);
             
             const nouvellesConfirmations = [];
             
-            if (Array.isArray(data) && data.length > 1) {
-                for(let i = 1; i < data.length; i++) {
+            if (Array.isArray(data)) {
+                // Parcourir toutes les lignes (commencer à 0 si pas d'en-tête, ou 1 si en-tête)
+                // D'après vos données, la ligne 0 contient déjà une vraie confirmation
+                for(let i = 0; i < data.length; i++) {
                     const ligne = data[i];
-                    if (ligne && ligne.length >= 2 && ligne[1] && ligne[1] !== "") {
-                        nouvellesConfirmations.push({
-                            id: i,
-                            nom: ligne[1] || "Inconnu",
-                            telephone: ligne[2] || "",
-                            date: ligne[0] || new Date().toISOString(),
-                            table: tablesAttribuees[ligne[2]] || (ligne[3] || "")
-                        });
+                    if (ligne && ligne.length >= 2) {
+                        const nom = ligne[1];
+                        const telephoneBrut = ligne[2];
+                        // Vérifier que le nom n'est pas un en-tête (éviter "Nom" ou vide)
+                        if (nom && nom !== "" && nom !== "Nom" && nom !== "NOM") {
+                            const telephoneClean = nettoyerTelephone(telephoneBrut);
+                            nouvellesConfirmations.push({
+                                id: i,
+                                nom: nom,
+                                telephone: telephoneClean,
+                                telephoneBrut: telephoneBrut,
+                                date: ligne[0] || new Date().toISOString(),
+                                table: tablesAttribuees[telephoneClean] || (ligne[3] || "")
+                            });
+                        }
                     }
                 }
             }
             
             confirmations = nouvellesConfirmations;
             afficherTableau();
-            showSuccess(`✅ ${confirmations.length} confirmation(s) chargée(s)`);
+            showSuccess(`✅ ${confirmations.length} confirmation(s) chargée(s) depuis Google Sheets`);
+            
+            if (confirmations.length === 0) {
+                container.innerHTML = '<div class="empty">📭 Aucune confirmation trouvée dans le Google Sheet.<br><br>➡️ Vérifiez que votre Sheet contient des données (colonne 1 = date, colonne 2 = nom, colonne 3 = téléphone).</div>';
+            }
             
         } catch(error) {
             console.error(error);
-            container.innerHTML = `<div class="empty">❌ Erreur de chargement.<br><br>Message : ${error.message}<br><br>💡 Vérifiez que votre Google Sheets est bien accessible et contient des données.</div>`;
+            container.innerHTML = `<div class="empty">❌ Erreur de chargement.<br><br>Message : ${error.message}<br><br>💡 Vérifiez que votre Google Sheets est bien accessible.</div>`;
             showError("Impossible de charger les données depuis Google Sheets.");
         }
     }
@@ -158,24 +180,24 @@
         </thead><tbody>`;
         
         confirmations.forEach((inv, idx) => {
-            const telClean = inv.telephone ? String(inv.telephone).replace(/[^0-9+]/g, '') : '';
+            const telClean = inv.telephone || '';
             const tableValue = inv.table || '';
+            const dateFormatee = inv.date ? new Date(inv.date).toLocaleString() : 'N/A';
             html += `
             <tr>
                 <td><strong>${escapeHtml(inv.nom)}</strong></td>
-                <td>${escapeHtml(inv.telephone)}</td>
-                <td>${inv.date ? new Date(inv.date).toLocaleString() : 'N/A'}</td>
-                <td><input type="number" class="table-input" data-telephone="${escapeHtml(inv.telephone)}" value="${tableValue}" placeholder="N°"></td>
+                <td>${escapeHtml(inv.telephoneBrut || inv.telephone)}</td>
+                <td>${dateFormatee}</td>
+                <td><input type="number" class="table-input" data-telephone="${escapeHtml(telClean)}" value="${tableValue}" placeholder="N°"></td>
                 <td>
                     <button class="btn-wa" data-telephone="${escapeHtml(telClean)}" data-nom="${escapeHtml(inv.nom)}">📱 WhatsApp</button>
                     <button class="btn-sms" data-telephone="${escapeHtml(telClean)}" data-nom="${escapeHtml(inv.nom)}">✉️ SMS</button>
                 </td>
             </tr>`;
         });
-        html += `</tbody></table></div>`;
+        html += `</tbody>}</div>`;
         container.innerHTML = html;
         
-        // Attacher les événements après l'ajout au DOM
         document.querySelectorAll('.table-input').forEach(input => {
             input.removeEventListener('change', handleTableChange);
             input.addEventListener('change', handleTableChange);
@@ -229,7 +251,7 @@
         
         let numero = String(telephone).replace(/\s/g, '');
         if (!numero.startsWith('+') && !numero.startsWith('00')) {
-            if (!numero.startsWith('226') && numero.length <= 8) {
+            if (numero.length === 8) {
                 numero = '+226' + numero;
             }
         }
@@ -248,47 +270,11 @@
         window.open(lien, '_blank');
     }
 
-    function ajouterManuellement() {
-        const nom = prompt("💫 Nom complet de l'invité :");
-        if(!nom || nom.trim() === "") return;
-        
-        const telephone = prompt("📱 Numéro WhatsApp (ex: +226XXXXXXXX ou 70XXXXXX) :");
-        if(!telephone || telephone.trim() === "") return;
-        
-        const confirmation = {
-            id: Date.now(),
-            nom: nom.trim(),
-            telephone: telephone.trim(),
-            date: new Date().toISOString(),
-            table: ""
-        };
-        
-        confirmations.unshift(confirmation);
-        afficherTableau();
-        showSuccess(`✅ Invité ajouté : ${nom}`);
-        
-        // Sauvegarder les manuels
-        const manuels = JSON.parse(localStorage.getItem('admin_manuels') || '[]');
-        manuels.push(confirmation);
-        localStorage.setItem('admin_manuels', JSON.stringify(manuels));
-    }
-
     // Initialisation
     chargerTablesSauvegardees();
+    chargerDepuisSheet();
     
-    // Boutons
     document.getElementById('syncBtn').addEventListener('click', chargerDepuisSheet);
-    document.getElementById('addManuelBtn').addEventListener('click', ajouterManuellement);
-    
-    // Chargement manuels au démarrage
-    const manuels = JSON.parse(localStorage.getItem('admin_manuels') || '[]');
-    if(manuels.length > 0) {
-        confirmations = manuels;
-        afficherTableau();
-    } else {
-        // Chargement auto depuis Sheet
-        chargerDepuisSheet();
-    }
 </script>
 </body>
 </html>
