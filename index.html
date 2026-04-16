@@ -293,6 +293,9 @@
 </audio>
 
 <script>
+    // 🔴 REMPLACEZ CETTE URL PAR LA VÔTRE (celle obtenue après déploiement Apps Script)
+    const WEBHOOK_URL = "https://script.google.com/macros/s/CE_QUE_VOUS_AVEZ_COPIE/exec";
+    
     (function() {
         // ========== CANVAS MAGIQUE ==========
         const canvas = document.getElementById('magicCanvas');
@@ -340,13 +343,13 @@
         window.addEventListener('devicemotion', (e) => { const acc=e.accelerationIncludingGravity; if(!acc) return; const now=Date.now(); if(now-lastShake<500) return; let deltaX=Math.abs((lastX||acc.x)-acc.x), deltaY=Math.abs((lastY||acc.y)-acc.y), deltaZ=Math.abs((lastZ||acc.z)-acc.z); if(deltaX+deltaY+deltaZ>22){ lastShake=now; revealAddress(); } lastX=acc.x; lastY=acc.y; lastZ=acc.z; });
         document.getElementById('shakeZone').addEventListener('dblclick', revealAddress);
         
-        // ========== RSVP + ENVOI EMAIL ==========
+        // ========== RSVP + ENVOI AUTOMATIQUE GOOGLE SHEET ==========
         const rsvpBtn = document.getElementById('rsvpBtn');
         let alreadyConfirmed = localStorage.getItem('wedding_rsvp_done');
         
         function createFloatingHearts() { for(let i=0;i<12;i++) { const heart=document.createElement('div'); heart.innerHTML=['❤️','💖','💗','✨','💕','💑'][Math.floor(Math.random()*6)]; heart.className='floating-heart'; heart.style.left=Math.random()*window.innerWidth+'px'; heart.style.fontSize=(16+Math.random()*24)+'px'; document.body.appendChild(heart); setTimeout(()=>heart.remove(),2200); } }
         
-        rsvpBtn.addEventListener('click', () => {
+        rsvpBtn.addEventListener('click', async () => {
             createFloatingHearts();
             if(navigator.vibrate) navigator.vibrate(80);
             if(alreadyConfirmed) { alert("✨ Vous avez déjà confirmé ! ✨\n\n📱 Vous recevrez votre numéro de table par WhatsApp sous 24h."); return; }
@@ -356,12 +359,21 @@
             let telephone = prompt("📱 Votre numéro WhatsApp (ex: +226XXXXXXXX) :");
             if(!telephone || telephone.trim()==="") { alert("Le numéro est obligatoire pour recevoir votre table."); return; }
             
-            // Envoi par email via mailto: (s'ouvre dans l'app mail)
-            const sujet = `Confirmation mariage - ${nom}`;
-            const corps = `Nouvelle confirmation de présence :\n\nNom : ${nom}\nTéléphone : ${telephone}\nDate : ${new Date().toLocaleString()}\n\nLien WhatsApp direct : https://wa.me/${telephone.replace(/[^0-9]/g, '')}\n\n--\nÀ envoyer le numéro de table manuellement.`;
-            window.location.href = `mailto:jojowendk@gmail.com?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(corps)}`;
+            // Envoi vers Google Sheet
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Important pour éviter les erreurs CORS
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nom: nom.trim(), telephone: telephone.trim() })
+                });
+                console.log("Envoyé avec succès");
+            } catch(error) {
+                console.error("Erreur envoi:", error);
+                alert("⚠️ Problème technique, mais votre confirmation a bien été notée. Vous recevrez votre table sous 24h.");
+            }
             
-            alert(`🎉 Merci ${nom} ! Votre présence est confirmée. 🎉\n\n✅ Un email a été envoyé aux mariés.\n📱 Vous recevrez votre numéro de table par WhatsApp sous 24h.\n\n✨ Rendez-vous le 6 juin 2026 à 15h ! ✨`);
+            alert(`🎉 Merci ${nom} ! Votre présence est confirmée. 🎉\n\n✅ Les mariés ont reçu votre confirmation.\n📱 Vous recevrez votre numéro de table par WhatsApp sous 24h.\n\n✨ Rendez-vous le 6 juin 2026 à 15h ! ✨`);
             localStorage.setItem('wedding_rsvp_done', 'true');
             alreadyConfirmed = true;
         });
