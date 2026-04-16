@@ -21,96 +21,87 @@
         .refresh { background: #6c757d; margin-bottom: 20px; }
         .empty { text-align: center; padding: 40px; color: #a58362; }
         .note { margin-top: 24px; background: #fff0e0; padding: 14px 20px; border-radius: 20px; font-size: 0.85rem; color: #5e3a22; }
+        .loading { text-align: center; padding: 40px; }
         @media (max-width: 700px) { th, td { font-size: 0.8rem; padding: 10px; } input { width: 70px; } button { padding: 6px 12px; font-size: 0.7rem; } }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>💒 Admin Mariage Joël & Nadège</h1>
-    <div class="sub">📋 Liste des invités ayant confirmé · Envoi manuel des numéros de table</div>
-    <button class="refresh" onclick="chargerConfirmations()">🔄 Rafraîchir la liste</button>
+    <div class="sub">📋 Liste des invités ayant confirmé (depuis Google Sheets) · Envoi manuel des numéros de table</div>
+    <button class="refresh" onclick="chargerDepuisSheet()">🔄 Synchroniser avec Google Sheets</button>
     <div id="tableContainer">
-        <p style="padding: 20px;">Chargement des confirmations reçues par email...</p>
+        <div class="loading">⏳ Chargement des confirmations...</div>
     </div>
     <div class="note">
         <strong>📌 Comment ça fonctionne ?</strong><br>
-        • Les confirmations arrivent sur <strong>jojowendk@gmail.com</strong> (email).<br>
-        • Cette page admin affiche toutes les confirmations que vous avez reçues <strong>manuellement</strong> (vous devez les saisir ici une fois pour les gérer).<br>
-        • Pour ajouter une confirmation reçue par email : cliquez sur <strong>"➕ Ajouter manuellement"</strong> ci-dessous.<br>
-        • Une fois la table attribuée, cliquez sur WhatsApp ou SMS pour envoyer le numéro à l'invité.
-    </div>
-    <div style="margin-top: 30px;">
-        <button onclick="ajouterManuellement()" style="background: #c2854b;">➕ Ajouter une confirmation manuellement</button>
+        • Les confirmations des invités sont automatiquement envoyées dans votre Google Sheet.<br>
+        • Cliquez sur "Synchroniser" pour voir les nouvelles confirmations.<br>
+        • Attribuez un numéro de table à chaque invité, puis cliquez sur WhatsApp ou SMS pour envoyer.<br>
+        • Les numéros attribués sont sauvegardés dans votre navigateur.
     </div>
 </div>
 
 <script>
-    // Stockage local des confirmations (dans votre navigateur admin)
+    // 🔴 REMPLACEZ PAR L'URL DE VOTRE APPS SCRIPT (doGet)
+    const SHEET_DATA_URL = "https://script.google.com/macros/s/AKfycbyVthmEcNEL2FSEGd_ALIAValzfJH_tfgxNN8Q7jJBbkVIsSePZdemWjmCsHhjnVpSL/exec";
+    
     let confirmations = [];
+    let tablesAttribuees = {};
 
-    function sauvegarder() {
-        localStorage.setItem('admin_confirmations_mariage', JSON.stringify(confirmations));
+    function chargerTablesSauvegardees() {
+        const saved = localStorage.getItem('admin_tables_mariage');
+        if(saved) tablesAttribuees = JSON.parse(saved);
     }
 
-    function chargerConfirmations() {
-        const stored = localStorage.getItem('admin_confirmations_mariage');
-        if(stored) confirmations = JSON.parse(stored);
-        else confirmations = [];
-        afficherTableau();
+    function sauvegarderTables() {
+        localStorage.setItem('admin_tables_mariage', JSON.stringify(tablesAttribuees));
+    }
+
+    async function chargerDepuisSheet() {
+        const container = document.getElementById('tableContainer');
+        container.innerHTML = '<div class="loading">⏳ Synchronisation en cours...</div>';
+        
+        try {
+            const response = await fetch(SHEET_DATA_URL);
+            const data = await response.json();
+            
+            // data[0] sont les en-têtes, à partir de data[1] les lignes
+            // Format: [Horodatage, Nom, Téléphone, Table, Statut]
+            confirmations = [];
+            for(let i = 1; i < data.length; i++) {
+                const ligne = data[i];
+                if(ligne[1] && ligne[1] !== "") { // Si un nom existe
+                    confirmations.push({
+                        id: i,
+                        nom: ligne[1],
+                        telephone: ligne[2],
+                        date: ligne[0],
+                        table: tablesAttribuees[ligne[2]] || ligne[3] || ""
+                    });
+                }
+            }
+            afficherTableau();
+        } catch(error) {
+            console.error(error);
+            container.innerHTML = `<div class="empty">❌ Erreur de chargement. Vérifiez que votre Apps Script est bien déployé et que l'URL est correcte.<br><br>URL actuelle : ${SHEET_DATA_URL}</div>`;
+        }
     }
 
     function afficherTableau() {
         const container = document.getElementById('tableContainer');
         if(confirmations.length === 0) {
-            container.innerHTML = `<div class="empty">📭 Aucune confirmation enregistrée pour l'instant.<br>Cliquez sur "Ajouter manuellement" pour ajouter les emails reçus.</div>`;
+            container.innerHTML = `<div class="empty">📭 Aucune confirmation pour l'instant.<br>Les invités doivent confirmer sur la carte publique.</div>`;
             return;
         }
-        let html = `<table><thead><tr><th>Nom</th><th>Téléphone</th><th>Date confirmation</th><th>Numéro table</th><th>Action</th></tr></thead><tbody>`;
+        
+        let html = `<tr><thead><tr><th>Nom</th><th>Téléphone</th><th>Date confirmation</th><th>Numéro table</th><th>Action</th></tr></thead><tbody>`;
         confirmations.forEach((inv, idx) => {
             html += `<tr>
-                <td><strong>${inv.nom}</strong></td>
-                <td>${inv.telephone}</td>
-                <td>${inv.date}</td>
-                <td><input type="number" id="table-${idx}" value="${inv.table || ''}" placeholder="N°"></td>
+                <td><strong>${escapeHtml(inv.nom)}</strong></td>
+                <td>${escapeHtml(inv.telephone)}</td>
+                <td>${new Date(inv.date).toLocaleString()}</td>
+                <td><input type="number" id="table-${idx}" value="${inv.table || ''}" placeholder="N°" onchange="majTable('${inv.telephone}', this.value)"></td>
                 <td>
-                    <button onclick="envoyerNumero('${inv.telephone}', '${inv.nom}', document.getElementById('table-${idx}').value, false)">📱 WhatsApp</button>
-                    <button class="btn-sms" onclick="envoyerNumero('${inv.telephone}', '${inv.nom}', document.getElementById('table-${idx}').value, true)">✉️ SMS</button>
-                </td>
-            </tr>`;
-        });
-        html += `</tbody></table>`;
-        container.innerHTML = html;
-    }
-
-    function envoyerNumero(telephone, nom, table, isSms = false) {
-        if(!table || table === "") { alert("Entrez d'abord un numéro de table"); return; }
-        // Mise à jour stockage
-        const idx = confirmations.findIndex(c => c.telephone === telephone && c.nom === nom);
-        if(idx !== -1) confirmations[idx].table = table;
-        sauvegarder();
-        
-        const message = encodeURIComponent(`✨ Bonjour ${nom} ! ✨\n\nVotre numéro de table pour le mariage de Joël & Nadège est le : ${table}\n\nRendez-vous le 6 juin 2026 à 15h au CCB Saint Abraham. 🥂\nLunch à 17h à La Coccinel.\n\nA très vite ! 💫`);
-        const lien = isSms 
-            ? `sms:${telephone}?body=${message}`
-            : `https://wa.me/${telephone.replace(/[^0-9]/g, '')}?text=${message}`;
-        window.open(lien, '_blank');
-        alert(`✅ Lien ouvert pour envoyer la table ${table} à ${nom}`);
-    }
-
-    function ajouterManuellement() {
-        const nom = prompt("Nom complet de l'invité (ex: Marie Zongo) :");
-        if(!nom) return;
-        const telephone = prompt("Numéro WhatsApp (ex: +226XXXXXXXX) :");
-        if(!telephone) return;
-        const date = new Date().toLocaleString();
-        confirmations.push({ nom, telephone, date, table: "" });
-        sauvegarder();
-        afficherTableau();
-        alert(`✅ Invité ajouté : ${nom}\nN'oubliez pas de lui attribuer une table et d'envoyer le message.`);
-    }
-
-    // Initialisation
-    chargerConfirmations();
-</script>
-</body>
-</html>
+                    <button onclick="envoyerNumero('${inv.telephone}', '${escapeHtml(inv.nom)}', document.getElementById('table-${idx}').value, false)">📱 WhatsApp</button>
+                    <button class="btn-sms" onclick="envoyerNumero('${inv.telephone}', '${escapeHtml(inv.nom)}', document.getElementById('table-${idx}').value, true)">✉
