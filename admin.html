@@ -15,45 +15,43 @@
         th { background: #c2854b; color: white; font-weight: 600; }
         tr:hover { background: #fff9f2; }
         input { padding: 10px 12px; border-radius: 60px; border: 1px solid #e2cbb8; width: 100px; text-align: center; font-size: 1rem; }
-        button { background: #25D366; color: white; border: none; padding: 8px 18px; border-radius: 60px; cursor: pointer; font-weight: 500; transition: 0.2s; margin: 4px; }
+        button { background: #f97316; color: white; border: none; padding: 8px 18px; border-radius: 60px; cursor: pointer; font-weight: 500; transition: 0.2s; margin: 4px; }
         button:hover { transform: scale(1.02); opacity: 0.9; }
-        .btn-sms { background: #128C7E; }
         .refresh { background: #6c757d; margin-bottom: 20px; }
         .empty { text-align: center; padding: 40px; color: #a58362; }
         .note { margin-top: 24px; background: #fff0e0; padding: 14px 20px; border-radius: 20px; font-size: 0.85rem; color: #5e3a22; }
         .loading { text-align: center; padding: 40px; }
         .success { background: #d4edda; color: #155724; padding: 12px; border-radius: 12px; margin-bottom: 20px; display: none; }
         .error { background: #f8d7da; color: #721c24; padding: 12px; border-radius: 12px; margin-bottom: 20px; display: none; }
-        .debug-info { background: #e7e7e7; color: #333; padding: 12px; border-radius: 12px; margin-bottom: 20px; font-family: monospace; font-size: 11px; word-break: break-all; display: none; }
+        .btn-link { background: #f97316; }
         @media (max-width: 700px) { th, td { font-size: 0.8rem; padding: 10px; } input { width: 70px; } button { padding: 6px 12px; font-size: 0.7rem; } }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>💒 Admin Mariage Joël & Nadège</h1>
-    <div class="sub">📋 Liste des invités ayant confirmé (depuis Google Sheets) · Envoi manuel des numéros de table</div>
+    <div class="sub">📋 Liste des invités · Générez un lien unique pour chaque invité</div>
     
     <div id="successMsg" class="success"></div>
     <div id="errorMsg" class="error"></div>
     
     <button class="refresh" id="syncBtn">🔄 Synchroniser avec Google Sheets</button>
-    <button class="refresh" id="debugBtn" style="background: #555; margin-left: 10px;">🐛 Voir debug</button>
     
     <div id="tableContainer">
-        <div class="loading">⏳ Chargement des confirmations...</div>
+        <div class="loading">⏳ Chargement...</div>
     </div>
-    <div id="debugInfo" class="debug-info"></div>
     <div class="note">
-        <strong>📌 Comment ça fonctionne ?</strong><br>
-        • Les confirmations des invités sont automatiquement envoyées dans votre Google Sheet.<br>
-        • Cliquez sur "Synchroniser" pour voir les nouvelles confirmations.<br>
-        • Attribuez un numéro de table à chaque invité, puis cliquez sur WhatsApp ou SMS pour envoyer.<br>
-        • Les numéros attribués sont sauvegardés dans votre navigateur.
+        <strong>📌 Comment utiliser les liens uniques ?</strong><br>
+        • Attribuez un numéro de table à l'invité.<br>
+        • Cliquez sur <strong>"📋 Lien table"</strong> → le lien est copié automatiquement.<br>
+        • Collez ce lien dans un message WhatsApp/SMS à l'invité.<br>
+        • L'invité clique sur le lien et voit son numéro de table.
     </div>
 </div>
 
 <script>
     const SHEET_DATA_URL = "https://script.google.com/macros/s/AKfycbywx7T5nWQ8nepqGPcDF8cekWwh1e9zb0QDXjQgRHV4gU4CTQIe88bMTWqV_pvR3oJS/exec";
+    const BASE_URL = "https://dom021293-pixel.github.io/invitation-joel-ingrid/";
     
     let confirmations = [];
     let tablesAttribuees = {};
@@ -72,16 +70,6 @@
         setTimeout(() => el.style.display = 'none', 5000);
     }
 
-    function nettoyerTelephone(tel) {
-        if (!tel) return "";
-        let nettoye = String(tel).replace(/[^0-9+]/g, '');
-        if (nettoye === "") return tel;
-        if (nettoye.startsWith('+')) return nettoye;
-        if (nettoye.length === 8) return '+226' + nettoye;
-        if (nettoye.length === 9 && nettoye.startsWith('0')) return '+226' + nettoye.substring(1);
-        return nettoye;
-    }
-
     function escapeHtml(str) {
         if (!str) return '';
         return String(str).replace(/[&<>]/g, function(m) {
@@ -90,6 +78,15 @@
             if (m === '>') return '&gt;';
             return m;
         });
+    }
+
+    function nettoyerTelephone(tel) {
+        if (!tel) return "";
+        let nettoye = String(tel).replace(/[^0-9+]/g, '');
+        if (nettoye === "") return tel;
+        if (nettoye.startsWith('+')) return nettoye;
+        if (nettoye.length === 8) return '+226' + nettoye;
+        return nettoye;
     }
 
     function chargerTablesSauvegardees() {
@@ -112,40 +109,30 @@
 
     async function chargerDepuisSheet() {
         const container = document.getElementById('tableContainer');
-        container.innerHTML = '<div class="loading">⏳ Synchronisation en cours...</div>';
+        container.innerHTML = '<div class="loading">⏳ Synchronisation...</div>';
         
         try {
             const response = await fetch(SHEET_DATA_URL);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
             
-            console.log("Données brutes reçues :", data);
-            document.getElementById('debugInfo').innerHTML = `<strong>🔍 Données reçues :</strong><br><pre>${JSON.stringify(data, null, 2)}</pre>`;
-            
             const nouvellesConfirmations = [];
             
-            // Vérifier que data est un tableau
             if (Array.isArray(data)) {
-                // Parcourir chaque ligne
                 for(let i = 0; i < data.length; i++) {
                     const ligne = data[i];
-                    // Vérifier que la ligne est un tableau et a au moins 2 éléments
                     if (Array.isArray(ligne) && ligne.length >= 2) {
-                        const date = ligne[0];
                         const nom = ligne[1];
                         const telephoneBrut = ligne[2] || "";
-                        const tableExistante = ligne[3] || "";
-                        
-                        // Vérifier que le nom existe et n'est pas un en-tête
-                        if (nom && nom !== "" && nom !== "Nom" && nom !== "NOM" && nom !== "nom") {
+                        if (nom && nom !== "" && nom !== "Nom" && nom !== "NOM") {
                             const telephoneClean = nettoyerTelephone(telephoneBrut);
                             nouvellesConfirmations.push({
                                 id: i,
                                 nom: nom,
                                 telephone: telephoneClean,
                                 telephoneBrut: telephoneBrut,
-                                date: date,
-                                table: tablesAttribuees[telephoneClean] || tableExistante
+                                date: ligne[0] || new Date().toISOString(),
+                                table: tablesAttribuees[telephoneClean] || (ligne[3] || "")
                             });
                         }
                     }
@@ -154,18 +141,32 @@
             
             confirmations = nouvellesConfirmations;
             afficherTableau();
-            
-            if (confirmations.length > 0) {
-                showSuccess(`✅ ${confirmations.length} confirmation(s) chargée(s) depuis Google Sheets`);
-            } else {
-                container.innerHTML = '<div class="empty">📭 Aucune confirmation trouvée dans le Google Sheet.<br><br>➡️ Les données reçues : ' + JSON.stringify(data) + '</div>';
-            }
+            showSuccess(`✅ ${confirmations.length} confirmation(s) chargée(s)`);
             
         } catch(error) {
             console.error(error);
-            container.innerHTML = `<div class="empty">❌ Erreur de chargement.<br><br>Message : ${error.message}</div>`;
-            showError("Impossible de charger les données depuis Google Sheets.");
+            container.innerHTML = `<div class="empty">❌ Erreur de chargement</div>`;
+            showError("Impossible de charger les données.");
         }
+    }
+
+    function genererLienTable(nom, table) {
+        if(!table || table === "") {
+            alert("❌ Entrez d'abord un numéro de table");
+            return;
+        }
+        if(!nom || nom === "") {
+            alert("❌ Nom manquant");
+            return;
+        }
+        
+        const lien = `${BASE_URL}table.html?nom=${encodeURIComponent(nom)}&table=${table}`;
+        
+        navigator.clipboard.writeText(lien).then(() => {
+            alert(`✅ Lien copié !\n\nEnvoyez-le à ${nom} par SMS ou WhatsApp.\n\n📋 Lien : ${lien}`);
+        }).catch(() => {
+            prompt(`📋 Copiez ce lien manuellement pour ${nom} :`, lien);
+        });
     }
 
     function afficherTableau() {
@@ -173,112 +174,44 @@
         if(!container) return;
         
         if(confirmations.length === 0) {
+            container.innerHTML = `<div class="empty">📭 Aucune confirmation pour l'instant.<br>Cliquez sur "Synchroniser".</div>`;
             return;
         }
         
         let html = `<div style="overflow-x: auto;"><table><thead>
-            <tr>
-                <th>Nom</th>
-                <th>Téléphone</th>
-                <th>Date confirmation</th>
-                <th>Numéro table</th>
-                <th>Action</th>
-            </tr>
-        </thead><tbody>`;
+            <tr><th>Nom</th><th>Téléphone</th><th>Date</th><th>Table</th><th>Action</th></tr></thead><tbody>`;
         
         confirmations.forEach((inv, idx) => {
-            const telClean = inv.telephone || '';
             const tableValue = inv.table || '';
             const dateFormatee = inv.date ? new Date(inv.date).toLocaleString() : 'N/A';
-            const affichageTel = inv.telephoneBrut || inv.telephone;
             html += `
             <tr>
                 <td><strong>${escapeHtml(inv.nom)}</strong></td>
-                <td>${escapeHtml(affichageTel)}</td>
+                <td>${escapeHtml(inv.telephoneBrut || inv.telephone)}</td>
                 <td>${dateFormatee}</td>
-                <td><input type="number" class="table-input" data-telephone="${escapeHtml(telClean)}" value="${tableValue}" placeholder="N°" style="width:80px;"></td>
+                <td><input type="number" class="table-input" data-telephone="${escapeHtml(inv.telephone)}" value="${tableValue}" placeholder="N°" style="width:80px;"></td>
                 <td>
-                   <button onclick="genererLienTable('${inv.telephone}', '${escapeHtml(inv.nom)}', document.getElementById('table-${idx}').value)">📋 Lien table</button>
-                    <button class="btn-sms" data-telephone="${escapeHtml(telClean)}" data-nom="${escapeHtml(inv.nom)}">✉️ SMS</button>
-                </td>
-            </tr>`;
+                    <button class="btn-link" onclick="genererLienTable('${escapeHtml(inv.nom)}', document.querySelector('#table-${idx}').value || this.closest('tr').querySelector('input').value)">📋 Lien table</button>
+                 </td>
+             </tr>`;
         });
         html += `</tbody>}</div>`;
         container.innerHTML = html;
         
-        document.querySelectorAll('.table-input').forEach(input => {
-            input.removeEventListener('change', handleTableChange);
-            input.addEventListener('change', handleTableChange);
-        });
-        
-        document.querySelectorAll('.btn-wa').forEach(btn => {
-            btn.removeEventListener('click', handleWhatsApp);
-            btn.addEventListener('click', handleWhatsApp);
-        });
-        
-        document.querySelectorAll('.btn-sms').forEach(btn => {
-            btn.removeEventListener('click', handleSMS);
-            btn.addEventListener('click', handleSMS);
+        // Attacher les événements pour les inputs
+        document.querySelectorAll('.table-input').forEach((input, idx) => {
+            input.id = `table-${idx}`;
+            input.addEventListener('change', (e) => {
+                const telephone = input.getAttribute('data-telephone');
+                majTable(telephone, input.value);
+            });
         });
     }
-    
-    function handleTableChange(event) {
-        const input = event.target;
-        const telephone = input.getAttribute('data-telephone');
-        const tableValue = input.value;
-        majTable(telephone, tableValue);
-    }
-    
-    function handleWhatsApp(event) {
-        const btn = event.currentTarget;
-        const telephone = btn.getAttribute('data-telephone');
-        const nom = btn.getAttribute('data-nom');
-        const inv = confirmations.find(c => c.telephone === telephone);
-        const table = inv ? inv.table : '';
-        envoyerNumero(telephone, nom, table, false);
-    }
-    
-    function handleSMS(event) {
-        const btn = event.currentTarget;
-        const telephone = btn.getAttribute('data-telephone');
-        const nom = btn.getAttribute('data-nom');
-        const inv = confirmations.find(c => c.telephone === telephone);
-        const table = inv ? inv.table : '';
-        envoyerNumero(telephone, nom, table, true);
-    }
-
-    function genererLienTable(telephone, nom, table) {
-    if(!table || table === "") {
-        alert("❌ Entrez d'abord un numéro de table");
-        return null;
-    }
-    if(!nom || nom === "") {
-        alert("❌ Nom manquant");
-        return null;
-    }
-    // Encoder le nom et la table pour l'URL
-    const nomEncode = encodeURIComponent(nom);
-    const lien = `https://dom021293-pixel.github.io/invitation-joel-ingrid/table.html?nom=${nomEncode}&table=${table}`;
-    
-    // Copier dans le presse-papier
-    navigator.clipboard.writeText(lien).then(() => {
-        alert(`✅ Lien copié !\n\nEnvoyez-le à ${nom}.\n\nLien : ${lien}`);
-    }).catch(() => {
-        alert(`📋 Lien à envoyer manuellement :\n${lien}`);
-    });
-    
-    return lien;
-}
 
     // Initialisation
     chargerTablesSauvegardees();
     chargerDepuisSheet();
-    
     document.getElementById('syncBtn').addEventListener('click', chargerDepuisSheet);
-    document.getElementById('debugBtn').addEventListener('click', () => {
-        const debugDiv = document.getElementById('debugInfo');
-        debugDiv.style.display = debugDiv.style.display === 'block' ? 'none' : 'block';
-    });
 </script>
 </body>
 </html>
