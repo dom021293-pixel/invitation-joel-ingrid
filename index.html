@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>✨ Joël & Nadège | Mariage Magique ✨</title>
+    <title>✨ Joël & Nadège | Mariage ✨</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -174,35 +174,65 @@
             text-align: center;
             border: 1px solid #ffe0b2;
         }
-        .shake-to-reveal {
+        
+        /* ========== EFFET LIVRE POUR LA LOCALISATION ========== */
+        .book-container {
+            perspective: 1500px;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        .book-cover {
             background: #fff3e0;
             border-radius: 32px;
-            margin: 20px 0;
             padding: 16px;
             text-align: center;
             border: 2px dashed #f97316;
-            cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s;
+            position: relative;
+            transform-style: preserve-3d;
+            transform-origin: left center;
+            transition: transform 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
-        .shake-to-reveal:active {
+        .book-cover:active {
             transform: scale(0.98);
             background: #ffe0b2;
         }
-        .hidden-address {
+        .book-content {
             max-height: 0;
+            opacity: 0;
             overflow: hidden;
-            transition: max-height 0.6s cubic-bezier(0.33, 1, 0.68, 1);
-            background: #ffffff;
+            transition: all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            background: #fffaf2;
             border-radius: 24px;
             margin-top: 0;
+            transform-origin: top;
+            transform: scaleY(0);
         }
-        .hidden-address.show {
-            max-height: 350px;
-            padding: 18px;
+        .book-content.show {
+            max-height: 400px;
+            opacity: 1;
             margin-top: 16px;
+            padding: 18px;
             border: 1px solid #f97316;
-            background: #fffaf2;
+            transform: scaleY(1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
+        .book-icon {
+            font-size: 2rem;
+            color: #f97316;
+            margin-bottom: 8px;
+        }
+        .address-icon {
+            color: #f97316;
+            margin-right: 8px;
+        }
+        .address-title {
+            font-weight: bold;
+            color: #2e7d32;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+        
         .btn-rsvp {
             background: linear-gradient(95deg, #f97316, #2e7d32);
             border: none;
@@ -261,15 +291,10 @@
             0% { transform: translateY(0) scale(0.8); opacity: 1; bottom: 0; }
             100% { transform: translateY(-200px) scale(1.2); opacity: 0; }
         }
-        .address-icon {
+        .instruction-text {
+            font-size: 12px;
             color: #f97316;
-            margin-right: 8px;
-        }
-        .address-title {
-            font-weight: bold;
-            color: #2e7d32;
-            margin-top: 10px;
-            margin-bottom: 5px;
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -277,13 +302,12 @@
 <canvas id="magicCanvas"></canvas>
 <div class="polaroid-card" id="polaroidCard">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div class="ephemeral-tag" id="dayColorLabel">✨ teinte du jour ✨</div>
+        <div class="ephemeral-tag" id="dayColorLabel">✨ Teinte du jour ✨</div>
         <i class="fas fa-star-of-life" style="color:#f97316; opacity:0.6;"></i>
     </div>
     <div class="familles-header">
         <div class="famille-gauche"><i class="fas fa-tree"></i><br>Les grandes familles <strong>Zoungrana</strong> et <strong>Simporé</strong><br>et les familles alliées</div>
-       
-        <div class="famille-droite"><i class="fas fa-feather-alt"></i><br>Les grandes familles <strong>Compaoré</strong>, <strong>Ouédraogo</strong>, <strong>Guigma</strong><br>et les familles alliées</div>
+        <div class="famille-droite"><i class="fas fa-feather-alt"></i><br>Les grandes familles <strong>Compaoré</strong>, <strong>Ouédraogo</strong>et <strong>Guigma</strong><br>et les familles alliées</div>
     </div>
     <div class="media-area">
         <div class="vinyl-container">
@@ -292,30 +316,34 @@
         </div>
         <div style="font-size: 10px; text-align:center; margin-top: 12px;">🎵 Slow éternel · Canon in D 🎵</div>
     </div>
-     <div class="famille-centre"><i class="fas fa-heart" style="color:#f97316;"></i> ont la joie de vous faire part du mariage de leurs enfants <i class="fas fa-heart" style="color:#f97316;"></i></div>
+    <div class="famille-centre"><i class="fas fa-heart" style="color:#f97316;"></i> ont la joie de vous faire part du mariage de leurs enfants <i class="fas fa-heart" style="color:#f97316;"></i></div>
+        
     <div class="names">✨ Wendkuuni Joël Dominique ✨<br>✨ & Nadège Ingrid Compaoré ✨</div>
     <div class="info-block">
-        <div class="date-badge"><i class="far fa-calendar-alt"></i> 6 JUIN 2026 — Cérémonie 15h</div>
+        <div class="date-badge"><i class="far fa-calendar-alt"></i> 6 JUIN 2026 — Cérémonie réligieuse 15h</div>
         <div><i class="fas fa-church"></i> <strong>CCB Saint Abraham</strong></div>
         <div style="margin-top: 6px;"><i class="fas fa-utensils"></i> Lunch 17h — <strong>La Coccinel</strong></div>
     </div>
     
-    <!-- Zone TAPE SIMPLE pour révéler les adresses -->
-    <div class="shake-to-reveal" id="revealZone">
-        <div class="shake-icon"><i class="fas fa-fingerprint"></i> <i class="fas fa-map-marker-alt"></i> <i class="fas fa-magic"></i></div>
-        <p>📍 TAPE ICI pour voir les adresses 📍<br><span style="font-size:12px;">(CCB Saint Abraham & La Coccinel)</span></p>
-        <div class="hidden-address" id="addressBlock">
-            <div>
+    <!-- Zone EFFET LIVRE -->
+    <div class="book-container" id="bookContainer">
+        <div class="book-cover" id="bookCover">
+            <div class="book-icon"><i class="fas fa-book-open"></i> <i class="fas fa-map-marker-alt"></i></div>
+            <p>📖 TAPEZ POUR VOIR LES ADRESSES 📖</p>
+            <div class="instruction-text">(CCB Saint Abraham & La Coccinel)</div>
+        </div>
+        <div class="book-content" id="bookContent">
+            <div style="text-align: center;">
                 <div class="address-title"><i class="fas fa-church address-icon"></i> Église : CCB Saint Abraham</div>
-                <p>Ouagadougou, Burkina Faso<br>Quartier Dassasgho, Rue 12.45</p>
+                <p>Ouagadougou, Burkina Faso<br>Quartier Trame d'accueil de Ouaga 2000</p>
                 <div class="address-title" style="margin-top: 16px;"><i class="fas fa-utensils address-icon"></i> Lunch : La Coccinel</div>
-                <p>Zone des Étoiles, Parcelle 8<br>Accès : après le rond-point de la Patte d'Oie</p>
-                <div style="margin-top: 12px; font-size: 12px; color: #f97316;">✨ Nous vous attendons avec joie ✨</div>
+                <p>Trame d'accueil de Ouaga 2000<br>Accès : Face côté Est de la CCB Saint Abraham</p>
+               
             </div>
         </div>
     </div>
     
-    <button class="btn-rsvp" id="rsvpBtn"><i class="fas fa-envelope-open-text"></i> Confirmer ma présence ✨</button>
+    <button class="btn-rsvp" id="rsvpBtn"><i class="fas fa-envelope-open-text"></i> Je confirme ma présence ✨</button>
     <div class="footer-note">🎞️ Après confirmation → vous recevrez votre numéro de table par WhatsApp</div>
 </div>
 <audio id="fakeAudioTrack" loop preload="auto">
@@ -334,7 +362,7 @@
         let stars = [], petals = [], shootingStars = [];
         function resizeCanvas() { w = window.innerWidth; h = window.innerHeight; canvas.width = w; canvas.height = h; initStars(); initPetals(); }
         function initStars() { stars = []; for(let i=0;i<Math.floor(w*h/4000);i++) stars.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*2.5, alpha: Math.random()*0.6+0.2, twinkle: Math.random()*0.03 }); }
-        function initPetals() { petals = []; for(let i=0;i/35;i++) petals.push({ x: Math.random()*w, y: Math.random()*h, size: 5+Math.random()*8, speedY: 0.6+Math.random()*1.5, speedX: (Math.random()-0.5)*0.5, rotation: Math.random()*Math.PI*2, color: `rgba(249,115,22,${0.4+Math.random()*0.4})` }); }
+        function initPetals() { petals = []; for(let i=0;i<35;i++) petals.push({ x: Math.random()*w, y: Math.random()*h, size: 5+Math.random()*8, speedY: 0.6+Math.random()*1.5, speedX: (Math.random()-0.5)*0.5, rotation: Math.random()*Math.PI*2, color: `rgba(249,115,22,${0.4+Math.random()*0.4})` }); }
         function drawStars() { for(let s of stars) { ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle = `rgba(255,240,200,${s.alpha+Math.sin(Date.now()*0.002*s.twinkle)*0.2})`; ctx.fill(); } }
         function addShootingStar() { shootingStars.push({ x: Math.random()*w, y: Math.random()*h*0.3, length: 60+Math.random()*80, angle: Math.PI/3+(Math.random()-0.5)*0.5, speed: 5+Math.random()*7, life: 1 }); }
         setInterval(() => { if(Math.random()<0.4) addShootingStar(); }, 4000);
@@ -362,26 +390,36 @@
         });
         vinyl.style.animationPlayState = 'paused';
         
-        // ========== TAPE SIMPLE POUR RÉVÉLER LES ADRESSES ==========
-        const addressDiv = document.getElementById('addressBlock');
-        const revealZone = document.getElementById('revealZone');
-        let hasRevealed = false;
+        // ========== EFFET LIVRE (ouvrir/fermer comme un livre) ==========
+        const bookContent = document.getElementById('bookContent');
+        const bookContainer = document.getElementById('bookContainer');
+        let isOpen = false;
         
-        function revealAddress() {
-            if(!hasRevealed){
-                addressDiv.classList.add('show');
-                hasRevealed = true;
-                if(navigator.vibrate) navigator.vibrate(50);
-                // Petit effet visuel
-                revealZone.style.backgroundColor = "#ffe0b2";
-                setTimeout(() => { if(revealZone) revealZone.style.backgroundColor = ""; }, 300);
+        function toggleBook() {
+            if(isOpen) {
+                // Fermeture : effet de livre qui se referme
+                bookContent.classList.remove('show');
+                // Animation de la couverture (simulation livre qui se ferme)
+                const cover = document.getElementById('bookCover');
+                cover.style.transform = 'scale(0.98)';
+                setTimeout(() => { cover.style.transform = ''; }, 300);
+                isOpen = false;
+            } else {
+                // Ouverture : le livre s'ouvre
+                bookContent.classList.add('show');
+                // Animation d'ouverture
+                const cover = document.getElementById('bookCover');
+                cover.style.transform = 'scale(1.02)';
+                setTimeout(() => { cover.style.transform = ''; }, 300);
+                isOpen = true;
             }
+            if(navigator.vibrate) navigator.vibrate(30);
         }
         
-        // Événement TAP / CLIC simple
-        revealZone.addEventListener('click', (e) => {
+        // Tape sur le livre pour ouvrir/fermer
+        bookContainer.addEventListener('click', (e) => {
             e.stopPropagation();
-            revealAddress();
+            toggleBook();
         });
         
         // ========== RSVP + ENVOI AUTOMATIQUE GOOGLE SHEET ==========
