@@ -76,16 +76,15 @@
         <div class="nom" id="nomInvite">---</div>
         <div class="table-number" id="tableNumber">---</div>
         <div class="message">🎉 Nous avons hâte de vous célébrer ! 🎉</div>
-        <div class="footer">Joël & Nadège · 6 juin 2026</div>
+        <div class="footer">Joël & Nadège · 6 juin 2026 · CCB Saint Abraham</div>
     </div>
     <script>
-        // Lire les paramètres dans l'URL
         const urlParams = new URLSearchParams(window.location.search);
         const nom = urlParams.get('nom');
         const table = urlParams.get('table');
         
         if(nom && table) {
-            document.getElementById('nomInvite').innerHTML = nom;
+            document.getElementById('nomInvite').innerHTML = decodeURIComponent(nom);
             document.getElementById('tableNumber').innerHTML = table;
         } else {
             document.getElementById('nomInvite').innerHTML = "Invité";
