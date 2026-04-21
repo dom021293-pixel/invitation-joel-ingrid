@@ -198,7 +198,7 @@
                 <td>${dateFormatee}</td>
                 <td><input type="number" class="table-input" data-telephone="${escapeHtml(telClean)}" value="${tableValue}" placeholder="N°" style="width:80px;"></td>
                 <td>
-                    <button class="btn-wa" data-telephone="${escapeHtml(telClean)}" data-nom="${escapeHtml(inv.nom)}">📱 WhatsApp</button>
+                   <button onclick="genererLienTable('${inv.telephone}', '${escapeHtml(inv.nom)}', document.getElementById('table-${idx}').value)">📋 Lien table</button>
                     <button class="btn-sms" data-telephone="${escapeHtml(telClean)}" data-nom="${escapeHtml(inv.nom)}">✉️ SMS</button>
                 </td>
             </tr>`;
@@ -247,36 +247,28 @@
         envoyerNumero(telephone, nom, table, true);
     }
 
-    function envoyerNumero(telephone, nom, table, isSms = false) {
-        if(!table || table === "") {
-            alert("❌ Entrez d'abord un numéro de table pour cet invité");
-            return;
-        }
-        if(!telephone || telephone === "") {
-            alert("❌ Numéro de téléphone manquant pour cet invité");
-            return;
-        }
-        
-        let numero = String(telephone).replace(/\s/g, '');
-        if (!numero.startsWith('+') && !numero.startsWith('00')) {
-            if (numero.length === 8) {
-                numero = '+226' + numero;
-            }
-        }
-        
-        const message = encodeURIComponent(` Bonjour ${nom} ! \n\nVotre numéro de table pour le mariage de Joël & Nadège est le : ${table}\n\n Rendez-vous le 6 juin 2026 à 15h au CCB Saint Abraham. \n Lunch à 17h à La Coccinel.\n\nA très vite ! \n\nUnion de prière`);
-        
-        let lien;
-        if (isSms) {
-            lien = `sms:${numero}?body=${message}`;
-        } else {
-            let waNumero = numero.replace(/[^0-9]/g, '');
-            if (waNumero.length === 8) waNumero = '226' + waNumero;
-            lien = `https://wa.me/${waNumero}?text=${message}`;
-        }
-        
-        window.open(lien, '_blank');
+    function genererLienTable(telephone, nom, table) {
+    if(!table || table === "") {
+        alert("❌ Entrez d'abord un numéro de table");
+        return null;
     }
+    if(!nom || nom === "") {
+        alert("❌ Nom manquant");
+        return null;
+    }
+    // Encoder le nom et la table pour l'URL
+    const nomEncode = encodeURIComponent(nom);
+    const lien = `https://dom021293-pixel.github.io/invitation-joel-ingrid/table.html?nom=${nomEncode}&table=${table}`;
+    
+    // Copier dans le presse-papier
+    navigator.clipboard.writeText(lien).then(() => {
+        alert(`✅ Lien copié !\n\nEnvoyez-le à ${nom}.\n\nLien : ${lien}`);
+    }).catch(() => {
+        alert(`📋 Lien à envoyer manuellement :\n${lien}`);
+    });
+    
+    return lien;
+}
 
     // Initialisation
     chargerTablesSauvegardees();
