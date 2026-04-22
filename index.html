@@ -80,69 +80,28 @@
             color: #f97316;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             text-align: center;
+            margin: 16px 0;
         }
         @media (max-width: 550px) {
             .familles-header { flex-direction: column; }
             .famille-gauche, .famille-droite, .famille-centre { width: 100%; }
         }
+        
+        /* Suppression du vinyle - remplacé par un simple séparateur décoratif */
         .media-area {
             background: #fff3e0;
             border-radius: 28px;
-            padding: 18px;
-            margin-bottom: 24px;
+            padding: 12px;
+            margin-bottom: 8px;
+            text-align: center;
             box-shadow: inset 0 1px 5px rgba(0,0,0,0.05), 0 12px 24px rgba(0,0,0,0.15);
         }
-        .vinyl-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
+        .music-note {
+            font-size: 1.2rem;
+            color: #f97316;
+            letter-spacing: 4px;
         }
-        .vinyl-record {
-            width: 100%;
-            max-width: 220px;
-            aspect-ratio: 1 / 1;
-            background: radial-gradient(circle at 30% 30%, #2a2a2a, #0a0a0a);
-            border-radius: 50%;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.5), 0 0 0 8px #cbbca8, 0 0 0 14px #f2e4d4;
-            position: relative;
-            animation: spinVinyl 6s linear infinite;
-        }
-        @keyframes spinVinyl {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .vinyl-record::after {
-            content: "♫";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 44px;
-            color: #ffda99;
-            background: #1f1b16;
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: inset 0 0 0 4px #f3bc7a;
-        }
-        .play-pause-btn {
-            position: absolute;
-            bottom: -18px;
-            right: 15px;
-            background: #2e7d32;
-            color: white;
-            border: none;
-            width: 48px;
-            height: 48px;
-            border-radius: 60px;
-            font-size: 1.3rem;
-            cursor: pointer;
-            z-index: 30;
-        }
+        
         .names {
             font-family: 'Playfair Display', serif;
             font-size: 1.8rem;
@@ -191,7 +150,6 @@
             position: relative;
             transform-style: preserve-3d;
             transform-origin: left center;
-            transition: transform 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
         .book-cover:active {
             transform: scale(0.98);
@@ -296,6 +254,20 @@
             color: #f97316;
             margin-top: 5px;
         }
+        /* Indicateur audio en arrière-plan discret */
+        .audio-badge {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 30px;
+            padding: 5px 12px;
+            font-size: 10px;
+            color: white;
+            z-index: 100;
+            backdrop-filter: blur(4px);
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -307,20 +279,22 @@
     </div>
     <div class="familles-header">
         <div class="famille-gauche"><i class="fas fa-tree"></i><br>Les grandes familles <strong>Zoungrana</strong> et <strong>Simporé</strong><br>et les familles alliées</div>
-        <div class="famille-droite"><i class="fas fa-feather-alt"></i><br>Les grandes familles <strong>Compaoré</strong>, <strong>Ouédraogo</strong>et <strong>Guigma</strong><br>et les familles alliées</div>
+        <div class="famille-droite"><i class="fas fa-feather-alt"></i><br>Les grandes familles <strong>Compaoré</strong>, <strong>Ouédraogo</strong> et <strong>Guigma</strong><br>et les familles alliées</div>
     </div>
+    
+    <!-- Zone musique sans vinyle -->
     <div class="media-area">
-        <div class="vinyl-container">
-            <div class="vinyl-record" id="vinylRecord"></div>
-            <button class="play-pause-btn" id="audioToggleBtn"><i class="fas fa-play"></i></button>
+        <div class="music-note">
+            <i class="fas fa-music"></i> <i class="fas fa-heart" style="color:#f97316;"></i> <i class="fas fa-music"></i>
         </div>
-        <div style="font-size: 10px; text-align:center; margin-top: 12px;">🎵 Slow éternel · Canon in D 🎵</div>
+        <div style="font-size: 10px; margin-top: 6px;">🎵 Slow éternel · Canon in D 🎵</div>
     </div>
+    
     <div class="famille-centre"><i class="fas fa-heart" style="color:#f97316;"></i> ont la joie de vous faire part du mariage de leurs enfants <i class="fas fa-heart" style="color:#f97316;"></i></div>
         
     <div class="names">✨ Wendkuuni Joël Dominique ✨<br>✨ & Nadège Ingrid Compaoré ✨</div>
     <div class="info-block">
-        <div class="date-badge"><i class="far fa-calendar-alt"></i> 6 JUIN 2026 — Cérémonie réligieuse 15h</div>
+        <div class="date-badge"><i class="far fa-calendar-alt"></i> 6 JUIN 2026 — Cérémonie religieuse 15h</div>
         <div><i class="fas fa-church"></i> <strong>CCB Saint Abraham</strong></div>
         <div style="margin-top: 6px;"><i class="fas fa-utensils"></i> Lunch 17h — <strong>La Coccinel</strong></div>
     </div>
@@ -338,7 +312,6 @@
                 <p>Ouagadougou, Burkina Faso<br>Quartier Trame d'accueil de Ouaga 2000</p>
                 <div class="address-title" style="margin-top: 16px;"><i class="fas fa-utensils address-icon"></i> Lunch : La Coccinel</div>
                 <p>Trame d'accueil de Ouaga 2000<br>Accès : Face côté Est de la CCB Saint Abraham</p>
-               
             </div>
         </div>
     </div>
@@ -346,7 +319,11 @@
     <button class="btn-rsvp" id="rsvpBtn"><i class="fas fa-envelope-open-text"></i> Je confirme ma présence ✨</button>
     <div class="footer-note">🎞️ Après confirmation → vous recevrez votre numéro de table par WhatsApp</div>
 </div>
-<audio id="fakeAudioTrack" loop preload="auto">
+
+<!-- Badge audio discret -->
+<div class="audio-badge" id="audioBadge">🎵 Musique d'ambiance</div>
+
+<audio id="backgroundMusic" loop preload="auto">
     <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3" type="audio/mpeg">
 </audio>
 
@@ -377,18 +354,42 @@
         const daysLeft = Math.ceil((weddingDate-today)/(1000*60*60*24));
         document.getElementById('dayColorLabel').innerHTML = `<i class="fas fa-palette"></i> jour ${daysLeft>0?daysLeft:"JOUR J"}`;
         
-        // ========== VINYLE ==========
-        const audio = document.getElementById('fakeAudioTrack');
-        const toggleBtn = document.getElementById('audioToggleBtn');
-        const vinyl = document.getElementById('vinylRecord');
-        let isPlaying = false;
-        audio.volume = 0.3; audio.loop = true;
-        toggleBtn.addEventListener('click', (e) => { e.stopPropagation();
-            if(isPlaying) { audio.pause(); toggleBtn.innerHTML='<i class="fas fa-play"></i>'; vinyl.style.animationPlayState='paused'; }
-            else { audio.play().catch(()=>{}); toggleBtn.innerHTML='<i class="fas fa-pause"></i>'; vinyl.style.animationPlayState='running'; }
-            isPlaying = !isPlaying;
-        });
-        vinyl.style.animationPlayState = 'paused';
+        // ========== MUSIQUE AUTOMATIQUE EN ARRIÈRE-PLAN ==========
+        const audio = document.getElementById('backgroundMusic');
+        const audioBadge = document.getElementById('audioBadge');
+        audio.volume = 0.25; // Volume doux
+        audio.loop = true;
+        
+        // Tentative de lecture automatique dès que possible
+        function demarrerMusique() {
+            audio.play().then(() => {
+                console.log("Musique démarrée automatiquement");
+                if(audioBadge) audioBadge.style.opacity = "0.7";
+            }).catch((err) => {
+                console.log("Lecture automatique bloquée par navigateur:", err);
+                // Sur mobile, la lecture auto est souvent bloquée.
+                // On affiche un petit message discret
+                if(audioBadge) {
+                    audioBadge.innerHTML = "🔇 Tapez pour activer la musique";
+                    audioBadge.style.cursor = "pointer";
+                    audioBadge.style.pointerEvents = "auto";
+                    audioBadge.onclick = () => {
+                        audio.play();
+                        audioBadge.innerHTML = "🎵 Musique d'ambiance";
+                        audioBadge.style.pointerEvents = "none";
+                    };
+                }
+            });
+        }
+        
+        // Lancement dès que possible (après tout chargement)
+        document.addEventListener('DOMContentLoaded', demarrerMusique);
+        // Si DOMContentLoaded est déjà passé
+        if(document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', demarrerMusique);
+        } else {
+            demarrerMusique();
+        }
         
         // ========== EFFET LIVRE (ouvrir/fermer comme un livre) ==========
         const bookContent = document.getElementById('bookContent');
@@ -397,26 +398,21 @@
         
         function toggleBook() {
             if(isOpen) {
-                // Fermeture : effet de livre qui se referme
                 bookContent.classList.remove('show');
-                // Animation de la couverture (simulation livre qui se ferme)
                 const cover = document.getElementById('bookCover');
                 cover.style.transform = 'scale(0.98)';
-                setTimeout(() => { cover.style.transform = ''; }, 300);
+                setTimeout(() => { if(cover) cover.style.transform = ''; }, 300);
                 isOpen = false;
             } else {
-                // Ouverture : le livre s'ouvre
                 bookContent.classList.add('show');
-                // Animation d'ouverture
                 const cover = document.getElementById('bookCover');
                 cover.style.transform = 'scale(1.02)';
-                setTimeout(() => { cover.style.transform = ''; }, 300);
+                setTimeout(() => { if(cover) cover.style.transform = ''; }, 300);
                 isOpen = true;
             }
             if(navigator.vibrate) navigator.vibrate(30);
         }
         
-        // Tape sur le livre pour ouvrir/fermer
         bookContainer.addEventListener('click', (e) => {
             e.stopPropagation();
             toggleBook();
@@ -426,19 +422,31 @@
         const rsvpBtn = document.getElementById('rsvpBtn');
         let alreadyConfirmed = localStorage.getItem('wedding_rsvp_done');
         
-        function createFloatingHearts() { for(let i=0;i<12;i++) { const heart=document.createElement('div'); heart.innerHTML=['❤️','💖','💗','✨','💕','💑'][Math.floor(Math.random()*6)]; heart.className='floating-heart'; heart.style.left=Math.random()*window.innerWidth+'px'; heart.style.fontSize=(16+Math.random()*24)+'px'; document.body.appendChild(heart); setTimeout(()=>heart.remove(),2200); } }
+        function createFloatingHearts() { 
+            for(let i=0;i<12;i++) { 
+                const heart=document.createElement('div'); 
+                heart.innerHTML=['❤️','💖','💗','✨','💕','💑'][Math.floor(Math.random()*6)]; 
+                heart.className='floating-heart'; 
+                heart.style.left=Math.random()*window.innerWidth+'px'; 
+                heart.style.fontSize=(16+Math.random()*24)+'px'; 
+                document.body.appendChild(heart); 
+                setTimeout(()=>heart.remove(),2200); 
+            } 
+        }
         
         rsvpBtn.addEventListener('click', async () => {
             createFloatingHearts();
             if(navigator.vibrate) navigator.vibrate(80);
-            if(alreadyConfirmed) { alert("✨ Vous avez déjà confirmé ! ✨\n\n📱 Vous recevrez votre numéro de table par WhatsApp sous 24h."); return; }
+            if(alreadyConfirmed) { 
+                alert("✨ Vous avez déjà confirmé ! ✨\n\n📱 Vous recevrez votre numéro de table par WhatsApp sous 24h."); 
+                return; 
+            }
             
             let nom = prompt("💫 Entrez votre prénom et nom (ex: Paul Kaboré) :");
             if(!nom || nom.trim()==="") { alert("Le nom est obligatoire pour confirmer."); return; }
             let telephone = prompt("📱 Votre numéro WhatsApp (ex: +226XXXXXXXX) :");
             if(!telephone || telephone.trim()==="") { alert("Le numéro est obligatoire pour recevoir votre table."); return; }
             
-            // Envoi vers Google Sheet
             try {
                 await fetch(WEBHOOK_URL, {
                     method: 'POST',
@@ -457,7 +465,13 @@
             alreadyConfirmed = true;
         });
         
-        document.body.addEventListener('touchstart', function initOnce() { if(!isPlaying && audio.paused) audio.play().catch(()=>{}); document.body.removeEventListener('touchstart', initOnce); }, { once: true });
+        // Optionnel: si on veut vraiment forcer la musique après interaction (backup)
+        document.body.addEventListener('touchstart', function once() {
+            if(audio.paused) {
+                audio.play().catch(()=>{});
+            }
+        }, { once: true });
+        
     })();
 </script>
 </body>
