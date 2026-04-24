@@ -47,7 +47,7 @@
             100% { transform: translateY(0px); }
         }
 
-        /* Corner ornaments */
+        /* Corner ornaments - sans pétales */
         .corner { position: absolute; width: 58px; height: 58px; }
         .corner.tl { top: 7px; left: 7px; }
         .corner.tr { top: 7px; right: 7px; transform: scaleX(-1); }
@@ -333,42 +333,48 @@
 
 <div class="card" id="polaroidCard">
 
-    <!-- Corner ornaments orange -->
-    <svg class="corner tl" viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg">
+    <!-- Corner ornaments orange - sans pétales (uniquement motifs géométriques) -->
+    <!--svg class="corner tl" viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg">
         <path d="M3 3 Q30 3 30 30" stroke="#f97316" stroke-width="1.8" fill="none"/>
         <path d="M3 3 Q3 30 30 30" stroke="#f97316" stroke-width="1.8" fill="none"/>
         <circle cx="3" cy="3" r="2.5" fill="#f97316"/>
         <circle cx="30" cy="30" r="2" fill="#f97316"/>
         <circle cx="16" cy="4" r="1.2" fill="#f97316" opacity="0.5"/>
         <circle cx="4" cy="16" r="1.2" fill="#f97316" opacity="0.5"/>
-        <!-- Leaf detail -->
-        <path d="M8 22 Q4 16 10 12 Q12 18 8 22Z" fill="#2e7d32" opacity="0.5"/>
-        <path d="M22 8 Q16 4 12 10 Q18 12 22 8Z" fill="#2e7d32" opacity="0.5"/>
-    </svg>
+    </!--svg>
     <svg class="corner tr" viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg">
         <path d="M3 3 Q30 3 30 30" stroke="#f97316" stroke-width="1.8" fill="none"/>
         <path d="M3 3 Q3 30 30 30" stroke="#f97316" stroke-width="1.8" fill="none"/>
         <circle cx="3" cy="3" r="2.5" fill="#f97316"/>
         <circle cx="30" cy="30" r="2" fill="#f97316"/>
-        <path d="M8 22 Q4 16 10 12 Q12 18 8 22Z" fill="#2e7d32" opacity="0.5"/>
-        <path d="M22 8 Q16 4 12 10 Q18 12 22 8Z" fill="#2e7d32" opacity="0.5"/>
     </svg>
     <svg class="corner bl" viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg">
         <path d="M3 3 Q30 3 30 30" stroke="#f97316" stroke-width="1.8" fill="none"/>
         <path d="M3 3 Q3 30 30 30" stroke="#f97316" stroke-width="1.8" fill="none"/>
         <circle cx="3" cy="3" r="2.5" fill="#f97316"/>
         <circle cx="30" cy="30" r="2" fill="#f97316"/>
-        <path d="M8 22 Q4 16 10 12 Q12 18 8 22Z" fill="#2e7d32" opacity="0.5"/>
-        <path d="M22 8 Q16 4 12 10 Q18 12 22 8Z" fill="#2e7d32" opacity="0.5"/>
     </svg>
-    <svg class="corner br" viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg">
+    <svg-- class="corner br" viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg">
         <path d="M3 3 Q30 3 30 30" stroke="#f97316" stroke-width="1.8" fill="none"/>
         <path d="M3 3 Q3 30 30 30" stroke="#f97316" stroke-width="1.8" fill="none"/>
         <circle cx="3" cy="3" r="2.5" fill="#f97316"/>
         <circle cx="30" cy="30" r="2" fill="#f97316"/>
-        <path d="M8 22 Q4 16 10 12 Q12 18 8 22Z" fill="#2e7d32" opacity="0.5"/>
-        <path d="M22 8 Q16 4 12 10 Q18 12 22 8Z" fill="#2e7d32" opacity="0.5"/>
-    </svg>
+    </svg-->
+
+    <!-- ====== MAP SECTION ====== -->
+    <!--div style="margin-bottom: 28px; border-radius: 12px; overflow: hidden; border: 2px solid #f97316; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <iframe 
+            src="https://www.openstreetmap.org/export/embed.html?bbox=-1.5008390085322965%2C12.300484740742496%2C-1.4848390085322965%2C12.312484740742496&layer=mapnik&marker=12.306484740742496%2C-1.4928390085322965" 
+            width="100%" 
+            height="280" 
+            style="border:0; display: block;"
+            allowfullscreen=""
+            loading="lazy">
+        </iframe>
+        <div style="background: #fff8f0; padding: 8px 12px; text-align: center; font-size: 0.7rem; color: #555;">
+            📍 <strong>12.306485, -1.492839</strong> — CCB Saint Abraham, Ouaga 2000
+        </div>
+    </-div-->
 
     <!-- COUNTDOWN -->
     <div class="day-tag">
@@ -539,7 +545,7 @@
 
     <!-- VERSE -->
     <div class="verse">
-        <strong>Proverbes 18:22</strong> "Celui qui trouve une femme trouve le bonheur ;<br>C'est une grâce qu'il obtient de l'Éternel."
+        <strong>Colossiens 3,14</strong> " Par-dessus tout cela, ayez l’amour, qui est le lien le plus parfait. "
     </div>
 
     <!-- EFFET LIVRE -->
@@ -552,9 +558,9 @@
         <div class="book-content" id="bookContent">
             <div style="text-align:center;">
                 <div class="address-title">⛪ Église : CCB Saint Abraham</div>
-                <p>📍 <strong>Trame d\'accueil', Ouaga 2000, Ouagadougou</strong></p>
+                <p>📍 <strong>Trame d'accueil', Ouaga 2000, Ouagadougou</strong></p>
                 <p style="margin-top:8px; font-size:0.7rem; color:#888;">
-                    <a href="https://maps.google.com/?q=8G44+JV7,+Ouaga+2000,+Ouagadougou" target="_blank" style="color:#f97316; text-decoration:none; font-weight:bold;">
+                    <a href="https://maps.google.com/?q=12.306484740742496,-1.4928390085322965" target="_blank" style="color:#f97316; text-decoration:none; font-weight:bold;">
                         🗺️ Ouvrir dans Google Maps
                     </a>
                 </p>
