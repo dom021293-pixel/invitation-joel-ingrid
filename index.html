@@ -2,122 +2,142 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>✨ Joël & Nadège | Mariage ✨</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>✨ Joël & Nadège | Mariage 6 Juin 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --orange: #d4622a;
+            --gold: #c9a84c;
+            --green: #2e7d32;
+            --dark: #1a1a1a;
+            --light: #fffaf5;
+        }
 
-        body {
-            min-height: 100vh;
-            background: #f5ede0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html, body {
+            min-height: 100%;
+            background: #f0e6d8;
             font-family: 'EB Garamond', serif;
-            padding: 20px;
             overflow-x: hidden;
         }
 
-        #magicCanvas {
+        /* ====== CONFETTI CANVAS ====== */
+        #confettiCanvas {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            z-index: 1;
+            z-index: 9999;
             pointer-events: none;
+        }
+
+        /* ====== PAGE WRAPPER ====== */
+        .page {
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 16px 12px 32px;
         }
 
         /* ====== CARD ====== */
         .card {
-            max-width: 580px;
             width: 100%;
+            max-width: 480px;
             background: #ffffff;
             position: relative;
-            z-index: 20;
-            padding: 0;
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.18);
-            animation: floatSoft 6s infinite ease-in-out;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
         }
 
-        @keyframes floatSoft {
-            0%,100% { transform: translateY(0); }
-            50%      { transform: translateY(-5px); }
-        }
-
-        /* ====== ARCHE DORÉE ====== */
-        .arch-svg {
+        /* ====== ARCHE SVG (proportions mobiles) ====== */
+        .arch-wrap {
             position: absolute;
             top: 0; left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             pointer-events: none;
             z-index: 2;
         }
+        .arch-wrap svg {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0; left: 0;
+        }
 
-        /* ====== FLEURS AQUARELLE (coins) ====== */
+        /* ====== FLEURS ====== */
         .flower-tr {
             position: absolute;
-            top: -10px; right: -10px;
-            width: 210px;
+            top: -8px; right: -8px;
+            width: clamp(120px, 42vw, 185px);
             z-index: 3;
             pointer-events: none;
         }
         .flower-bl {
             position: absolute;
-            bottom: -10px; left: -10px;
-            width: 170px;
+            bottom: -8px; left: -8px;
+            width: clamp(100px, 35vw, 150px);
             z-index: 3;
             pointer-events: none;
-            transform: scaleX(-1) rotate(10deg);
         }
 
-        /* ====== INNER CONTENT ====== */
+        /* ====== INNER ====== */
         .inner {
             position: relative;
             z-index: 10;
-            padding: 30px 44px 36px;
+            padding: clamp(20px, 5vw, 36px) clamp(18px, 7vw, 44px) clamp(24px, 5vw, 36px);
         }
 
         /* ====== MONOGRAMME ====== */
         .monogram-wrap {
             display: flex;
             justify-content: center;
-            margin-bottom: 28px;
-            margin-top: 10px;
+            margin-bottom: clamp(16px, 4vw, 28px);
+            margin-top: 8px;
         }
-
-        .monogram-svg { width: 130px; height: 72px; }
+        .monogram-svg {
+            width: clamp(100px, 28vw, 130px);
+            height: auto;
+        }
 
         /* ====== FAMILLES ====== */
         .familles-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 26px;
+            gap: 8px;
+            margin-bottom: clamp(16px, 4vw, 24px);
+            padding: 0 clamp(4px, 2vw, 12px);
         }
         .famille-col {
             text-align: center;
-            font-family: 'EB Garamond', serif;
-            font-size: 0.92rem;
-            line-height: 1.65;
+            font-size: clamp(0.72rem, 2.8vw, 0.92rem);
+            line-height: 1.6;
             color: #2a2a2a;
             font-style: italic;
         }
         .famille-col strong {
             font-style: normal;
             font-weight: 700;
+            display: block;
+        }
+
+        /* ====== SEPARATEUR ====== */
+        .sep {
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--gold), transparent);
+            margin: 0 clamp(10px, 5vw, 30px) clamp(14px, 3vw, 20px);
         }
 
         /* ====== JOIE ====== */
         .joie-text {
             text-align: center;
-            font-family: 'EB Garamond', serif;
-            font-size: 1rem;
+            font-size: clamp(0.82rem, 3.2vw, 1rem);
             font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 22px;
-            letter-spacing: 0.01em;
+            color: var(--dark);
+            margin-bottom: clamp(12px, 3vw, 20px);
+            padding: 0 clamp(6px, 3vw, 16px);
+            line-height: 1.4;
         }
 
         /* ====== NAMES ====== */
@@ -125,246 +145,273 @@
             display: grid;
             grid-template-columns: 1fr auto 1fr;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 28px;
+            gap: 6px;
+            margin-bottom: clamp(12px, 3vw, 22px);
+            padding: 0 clamp(4px, 2vw, 8px);
         }
         .name-block { text-align: center; }
         .name-script {
             font-family: 'Great Vibes', cursive;
-            font-size: 3.2rem;
-            color: #d4622a;
-            line-height: 1.15;
+            font-size: clamp(2rem, 9vw, 3.2rem);
+            color: var(--orange);
+            line-height: 1.2;
             display: block;
         }
-        .rings-center {
-            text-align: center;
-            flex-shrink: 0;
+        .rings-center { text-align: center; flex-shrink: 0; }
+        .rings-svg {
+            width: clamp(44px, 13vw, 68px);
+            height: clamp(44px, 13vw, 68px);
         }
-        .rings-svg { width: 68px; height: 68px; }
 
         /* ====== DATE ====== */
         .date-section {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 16px;
-            margin-bottom: 6px;
+            gap: clamp(8px, 3vw, 16px);
+            margin-bottom: 4px;
         }
         .date-label {
             font-family: 'Cinzel', serif;
-            font-size: 0.85rem;
-            color: #d4622a;
+            font-size: clamp(0.72rem, 2.8vw, 0.88rem);
+            color: var(--orange);
             font-weight: 600;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.1em;
             text-decoration: underline;
-            text-underline-offset: 4px;
-            text-decoration-color: #d4622a;
+            text-underline-offset: 3px;
         }
         .date-day {
             font-family: 'Cinzel', serif;
-            font-size: 2.8rem;
-            color: #d4622a;
+            font-size: clamp(2rem, 9vw, 2.8rem);
+            color: var(--orange);
             font-weight: 700;
             line-height: 1;
         }
         .date-year {
             font-family: 'Cinzel', serif;
-            font-size: 1.6rem;
-            color: #1a1a1a;
+            font-size: clamp(1.1rem, 4.5vw, 1.6rem);
+            color: var(--dark);
             font-weight: 600;
-            letter-spacing: 0.08em;
             text-decoration: underline;
-            text-underline-offset: 4px;
+            text-underline-offset: 3px;
+            letter-spacing: 0.06em;
         }
         .date-month-wrap {
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: clamp(16px, 4vw, 24px);
         }
         .date-month {
             font-family: 'Cinzel', serif;
-            font-size: 0.9rem;
-            color: #1a1a1a;
+            font-size: clamp(0.75rem, 3vw, 0.92rem);
+            color: var(--dark);
             font-weight: 700;
-            letter-spacing: 0.2em;
+            letter-spacing: 0.22em;
         }
 
-        /* ====== EVENTS TIMELINE ====== */
+        /* ====== EVENTS ====== */
+        .timeline-bar {
+            display: flex;
+            align-items: center;
+            margin: 0 0 clamp(14px, 3.5vw, 20px);
+        }
+        .tl-line { flex: 1; height: 1.5px; background: var(--dark); }
+        .tl-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--orange); flex-shrink: 0; margin: 0 3px; }
+
         .events-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0;
-            margin-bottom: 22px;
+            gap: 8px;
+            margin-bottom: clamp(14px, 3.5vw, 22px);
         }
-
-        .event-col { text-align: center; padding: 0 12px; }
-
-        .event-icon { margin-bottom: 10px; }
-        .event-icon svg { width: 52px; height: 52px; }
-
-        .timeline-line {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0;
-            margin-bottom: 14px;
-            position: relative;
-        }
-        .tl-line {
-            height: 1.5px;
-            background: #2a2a2a;
-            flex: 1;
-        }
-        .tl-dot {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            background: #d4622a;
-            flex-shrink: 0;
-            margin: 0 2px;
-        }
-
+        .event-col { text-align: center; padding: 0 4px; }
+        .event-icon { margin-bottom: 8px; }
+        .event-icon svg { width: clamp(38px, 10vw, 52px); height: clamp(38px, 10vw, 52px); }
         .event-time {
             font-family: 'Cinzel', serif;
-            font-size: 1rem;
-            color: #d4622a;
+            font-size: clamp(0.9rem, 3.5vw, 1.05rem);
+            color: var(--orange);
             font-weight: 700;
-            letter-spacing: 0.06em;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            letter-spacing: 0.04em;
         }
         .event-detail {
-            font-family: 'EB Garamond', serif;
-            font-size: 0.88rem;
+            font-size: clamp(0.75rem, 2.9vw, 0.9rem);
             color: #2a2a2a;
             line-height: 1.5;
         }
         .event-detail strong { font-weight: 700; }
 
+        /* ====== LOCALISATION ====== */
+        .location-section {
+            margin: clamp(10px, 3vw, 18px) 0 clamp(12px, 3vw, 18px);
+            border: 1.5px dashed var(--orange);
+            border-radius: 4px;
+            background: #fff8f2;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .location-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: clamp(10px, 3vw, 14px) clamp(12px, 3.5vw, 18px);
+        }
+        .location-header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .location-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(0.7rem, 2.8vw, 0.82rem);
+            font-weight: 700;
+            color: var(--orange);
+            letter-spacing: 0.06em;
+        }
+        .location-arrow {
+            font-size: clamp(0.8rem, 3vw, 1rem);
+            color: var(--orange);
+            transition: transform 0.3s;
+        }
+        .location-arrow.open { transform: rotate(180deg); }
+
+        .location-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.45s cubic-bezier(0.2, 0.9, 0.4, 1.1), padding 0.3s;
+            padding: 0 clamp(12px, 3.5vw, 18px);
+        }
+        .location-body.show {
+            max-height: 200px;
+            padding: 0 clamp(12px, 3.5vw, 18px) clamp(12px, 3vw, 16px);
+        }
+        .loc-item {
+            margin-bottom: 10px;
+        }
+        .loc-label {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(0.68rem, 2.6vw, 0.78rem);
+            font-weight: 700;
+            color: var(--green);
+            margin-bottom: 3px;
+        }
+        .loc-text {
+            font-size: clamp(0.72rem, 2.8vw, 0.84rem);
+            color: #444;
+            line-height: 1.45;
+        }
+        .loc-link {
+            display: inline-block;
+            margin-top: 4px;
+            font-size: clamp(0.68rem, 2.6vw, 0.76rem);
+            color: var(--orange);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
         /* ====== VERSE ====== */
         .verse {
             text-align: center;
-            font-family: 'EB Garamond', serif;
-            font-size: 0.85rem;
-            color: #d4622a;
+            font-size: clamp(0.75rem, 2.9vw, 0.88rem);
+            color: var(--orange);
             font-style: italic;
-            line-height: 1.6;
-            padding: 0 10px;
+            line-height: 1.65;
+            padding: 0 clamp(6px, 3vw, 12px);
         }
 
         /* ====== FLOATING HEARTS ====== */
         .floating-heart {
             position: fixed;
-            bottom: 0;
             pointer-events: none;
             z-index: 1000;
             animation: floatUp 2s ease-out forwards;
         }
         @keyframes floatUp {
             0%   { transform: translateY(0) scale(0.8); opacity: 1; }
-            100% { transform: translateY(-200px) scale(1.2); opacity: 0; }
-        }
-
-        @media (max-width: 480px) {
-            .inner { padding: 24px 22px 28px; }
-            .name-script { font-size: 2.4rem; }
-            .date-day { font-size: 2.2rem; }
-            .flower-tr { width: 150px; }
-            .flower-bl { width: 120px; }
-            .famille-col { font-size: 0.82rem; }
+            100% { transform: translateY(-180px) scale(1.2); opacity: 0; }
         }
     </style>
 </head>
 <body>
-<canvas id="magicCanvas"></canvas>
 
+<!-- CONFETTI CANVAS -->
+<canvas id="confettiCanvas"></canvas>
+
+<div class="page">
 <div class="card" id="mainCard">
 
-    <!-- ARCHE SVG -->
-    <svg class="arch-svg" viewBox="0 0 580 900" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M40 900 L40 320 Q40 40 290 40 Q540 40 540 320 L540 900"
-              stroke="#c9a84c" stroke-width="2.5" fill="none"/>
+    <!-- ARCHE DORÉE dynamique via JS pour s'adapter à la hauteur -->
+    <div class="arch-wrap" id="archWrap"></div>
+
+    <!-- FLEUR COIN HAUT DROIT -->
+    <svg class="flower-tr" viewBox="0 0 200 190" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="148" cy="52" rx="40" ry="36" fill="#c8614a" opacity="0.16"/>
+        <ellipse cx="148" cy="52" rx="30" ry="26" fill="#c8614a" opacity="0.2"/>
+        <ellipse cx="148" cy="52" rx="20" ry="18" fill="#d4622a" opacity="0.32"/>
+        <ellipse cx="150" cy="48" rx="13" ry="12" fill="#e07040" opacity="0.52"/>
+        <ellipse cx="152" cy="46" rx="7" ry="6" fill="#e88050" opacity="0.72"/>
+        <ellipse cx="112" cy="37" rx="24" ry="18" fill="#c8614a" opacity="0.18" transform="rotate(-28 112 37)"/>
+        <ellipse cx="175" cy="18" rx="18" ry="14" fill="#d4622a" opacity="0.22" transform="rotate(18 175 18)"/>
+        <ellipse cx="188" cy="66" rx="20" ry="13" fill="#c8614a" opacity="0.18" transform="rotate(48 188 66)"/>
+        <ellipse cx="96" cy="72" rx="26" ry="24" fill="#f5dfc0" opacity="0.52"/>
+        <ellipse cx="96" cy="72" rx="16" ry="14" fill="#f0d0a0" opacity="0.62"/>
+        <ellipse cx="96" cy="70" rx="9" ry="8" fill="#e8c080" opacity="0.68"/>
+        <ellipse cx="72" cy="59" rx="14" ry="10" fill="#f5dfc0" opacity="0.42" transform="rotate(-18 72 59)"/>
+        <ellipse cx="84" cy="96" rx="12" ry="9" fill="#f0d0a0" opacity="0.38" transform="rotate(14 84 96)"/>
+        <ellipse cx="120" cy="85" rx="16" ry="11" fill="#f5dfc0" opacity="0.36" transform="rotate(-8 120 85)"/>
+        <ellipse cx="62" cy="116" rx="20" ry="18" fill="#e8a890" opacity="0.38"/>
+        <ellipse cx="62" cy="116" rx="11" ry="10" fill="#e09878" opacity="0.52"/>
+        <ellipse cx="62" cy="114" rx="6.5" ry="6" fill="#d88060" opacity="0.62"/>
+        <path d="M154 86 Q132 126 102 146" stroke="#7a6040" stroke-width="1.8" fill="none" opacity="0.45"/>
+        <path d="M132 108 Q112 96 90 112" stroke="#7a6040" stroke-width="1.4" fill="none" opacity="0.38"/>
+        <ellipse cx="108" cy="144" rx="13" ry="5.5" fill="#7a8050" opacity="0.38" transform="rotate(-38 108 144)"/>
+        <ellipse cx="94" cy="134" rx="11" ry="4.5" fill="#8a9060" opacity="0.33" transform="rotate(18 94 134)"/>
+        <ellipse cx="125" cy="122" rx="10" ry="4.5" fill="#7a8050" opacity="0.36" transform="rotate(-14 125 122)"/>
+        <circle cx="163" cy="96" r="4.5" fill="#c8614a" opacity="0.45"/>
+        <circle cx="171" cy="108" r="3.5" fill="#d4622a" opacity="0.4"/>
+        <circle cx="86" cy="46" r="3.5" fill="#f0c080" opacity="0.52"/>
+        <circle cx="74" cy="36" r="2.5" fill="#f0c080" opacity="0.42"/>
     </svg>
 
-    <!-- FLEURS AQUARELLE COIN HAUT DROIT (SVG peint) -->
-    <svg class="flower-tr" viewBox="0 0 210 200" xmlns="http://www.w3.org/2000/svg">
-        <!-- Grande rose terracotta -->
-        <ellipse cx="155" cy="55" rx="42" ry="38" fill="#c8614a" opacity="0.18"/>
-        <ellipse cx="155" cy="55" rx="32" ry="28" fill="#c8614a" opacity="0.22"/>
-        <ellipse cx="155" cy="55" rx="22" ry="20" fill="#d4622a" opacity="0.35"/>
-        <ellipse cx="155" cy="50" rx="14" ry="13" fill="#e07040" opacity="0.55"/>
-        <ellipse cx="158" cy="48" rx="8" ry="7" fill="#e88050" opacity="0.75"/>
-        <!-- Pétales externes -->
-        <ellipse cx="118" cy="40" rx="26" ry="20" fill="#c8614a" opacity="0.2" transform="rotate(-30 118 40)"/>
-        <ellipse cx="180" cy="20" rx="20" ry="16" fill="#d4622a" opacity="0.25" transform="rotate(20 180 20)"/>
-        <ellipse cx="195" cy="70" rx="22" ry="15" fill="#c8614a" opacity="0.2" transform="rotate(50 195 70)"/>
-        <!-- Petite fleur crème -->
-        <ellipse cx="100" cy="75" rx="28" ry="26" fill="#f5dfc0" opacity="0.55"/>
-        <ellipse cx="100" cy="75" rx="18" ry="16" fill="#f0d0a0" opacity="0.65"/>
-        <ellipse cx="100" cy="72" rx="10" ry="9" fill="#e8c080" opacity="0.7"/>
-        <!-- Pétales crème -->
-        <ellipse cx="75" cy="62" rx="16" ry="12" fill="#f5dfc0" opacity="0.45" transform="rotate(-20 75 62)"/>
-        <ellipse cx="88" cy="100" rx="14" ry="10" fill="#f0d0a0" opacity="0.4" transform="rotate(15 88 100)"/>
-        <ellipse cx="125" cy="88" rx="18" ry="13" fill="#f5dfc0" opacity="0.4" transform="rotate(-10 125 88)"/>
-        <!-- Rose pâle en bas -->
-        <ellipse cx="65" cy="120" rx="22" ry="20" fill="#e8a890" opacity="0.4"/>
-        <ellipse cx="65" cy="120" rx="13" ry="12" fill="#e09878" opacity="0.55"/>
-        <ellipse cx="65" cy="118" rx="8" ry="7" fill="#d88060" opacity="0.65"/>
-        <!-- Feuilles/branches -->
-        <path d="M160 90 Q140 130 110 150" stroke="#7a6040" stroke-width="2" fill="none" opacity="0.5"/>
-        <path d="M140 110 Q120 100 100 115" stroke="#7a6040" stroke-width="1.5" fill="none" opacity="0.4"/>
-        <ellipse cx="115" cy="148" rx="14" ry="6" fill="#7a8050" opacity="0.4" transform="rotate(-40 115 148)"/>
-        <ellipse cx="100" cy="138" rx="12" ry="5" fill="#8a9060" opacity="0.35" transform="rotate(20 100 138)"/>
-        <ellipse cx="130" cy="125" rx="11" ry="5" fill="#7a8050" opacity="0.38" transform="rotate(-15 130 125)"/>
-        <!-- Petites baies/bourgeons -->
-        <circle cx="170" cy="100" r="5" fill="#c8614a" opacity="0.5"/>
-        <circle cx="178" cy="112" r="4" fill="#d4622a" opacity="0.45"/>
-        <circle cx="90" cy="50" r="4" fill="#f0c080" opacity="0.55"/>
-        <circle cx="78" cy="40" r="3" fill="#f0c080" opacity="0.45"/>
-    </svg>
-
-    <!-- FLEURS COIN BAS GAUCHE -->
-    <svg class="flower-bl" viewBox="0 0 170 160" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="60" cy="90" rx="35" ry="32" fill="#f5dfc0" opacity="0.5"/>
-        <ellipse cx="60" cy="90" rx="22" ry="20" fill="#f0d0a0" opacity="0.6"/>
-        <ellipse cx="60" cy="88" rx="12" ry="11" fill="#e8c080" opacity="0.7"/>
-        <ellipse cx="38" cy="60" rx="28" ry="24" fill="#c8614a" opacity="0.2"/>
-        <ellipse cx="38" cy="60" rx="18" ry="15" fill="#d4622a" opacity="0.3"/>
-        <ellipse cx="38" cy="58" rx="10" ry="9" fill="#e07040" opacity="0.5"/>
-        <ellipse cx="100" cy="70" rx="22" ry="18" fill="#e8a890" opacity="0.35"/>
-        <ellipse cx="100" cy="70" rx="12" ry="10" fill="#e09878" opacity="0.5"/>
-        <path d="M70 50 Q90 80 80 120" stroke="#7a6040" stroke-width="1.8" fill="none" opacity="0.45"/>
-        <path d="M40 90 Q60 110 50 140" stroke="#7a6040" stroke-width="1.5" fill="none" opacity="0.4"/>
-        <ellipse cx="78" cy="115" rx="12" ry="5" fill="#7a8050" opacity="0.4" transform="rotate(-30 78 115)"/>
-        <ellipse cx="55" cy="130" rx="10" ry="4" fill="#8a9060" opacity="0.35" transform="rotate(20 55 130)"/>
-        <circle cx="110" cy="95" r="4" fill="#d4622a" opacity="0.45"/>
-        <circle cx="118" cy="82" r="3" fill="#c8614a" opacity="0.4"/>
+    <!-- FLEUR COIN BAS GAUCHE -->
+    <svg class="flower-bl" viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="58" cy="88" rx="32" ry="30" fill="#f5dfc0" opacity="0.48"/>
+        <ellipse cx="58" cy="88" rx="20" ry="18" fill="#f0d0a0" opacity="0.58"/>
+        <ellipse cx="58" cy="86" rx="11" ry="10" fill="#e8c080" opacity="0.68"/>
+        <ellipse cx="35" cy="57" rx="26" ry="22" fill="#c8614a" opacity="0.18"/>
+        <ellipse cx="35" cy="57" rx="16" ry="13" fill="#d4622a" opacity="0.28"/>
+        <ellipse cx="35" cy="55" rx="9" ry="8" fill="#e07040" opacity="0.48"/>
+        <ellipse cx="96" cy="68" rx="20" ry="16" fill="#e8a890" opacity="0.32"/>
+        <ellipse cx="96" cy="68" rx="11" ry="9" fill="#e09878" opacity="0.48"/>
+        <path d="M66 48 Q88 78 76 118" stroke="#7a6040" stroke-width="1.7" fill="none" opacity="0.42"/>
+        <path d="M38 88 Q58 108 48 138" stroke="#7a6040" stroke-width="1.4" fill="none" opacity="0.38"/>
+        <ellipse cx="74" cy="112" rx="11" ry="4.5" fill="#7a8050" opacity="0.38" transform="rotate(-28 74 112)"/>
+        <ellipse cx="52" cy="128" rx="9.5" ry="3.8" fill="#8a9060" opacity="0.33" transform="rotate(18 52 128)"/>
+        <circle cx="107" cy="92" r="3.8" fill="#d4622a" opacity="0.42"/>
+        <circle cx="115" cy="80" r="2.8" fill="#c8614a" opacity="0.36"/>
     </svg>
 
     <!-- INNER CONTENT -->
     <div class="inner">
 
-        <!-- MONOGRAMME J & N -->
+        <!-- MONOGRAMME -->
         <div class="monogram-wrap">
             <svg class="monogram-svg" viewBox="0 0 130 72" xmlns="http://www.w3.org/2000/svg">
-                <!-- Couronne de laurier gauche -->
                 <path d="M18 36 Q10 28 14 20 Q18 28 22 24 Q20 32 18 36Z" fill="#c9a84c" opacity="0.7"/>
                 <path d="M14 36 Q6 30 8 22 Q14 30 16 26 Q14 34 14 36Z" fill="#c9a84c" opacity="0.55"/>
                 <path d="M22 36 Q14 32 16 22 Q22 30 24 28 Q22 34 22 36Z" fill="#c9a84c" opacity="0.6"/>
                 <path d="M10 32 Q4 26 6 18 Q10 26 12 24 Q10 30 10 32Z" fill="#c9a84c" opacity="0.45"/>
-                <!-- Couronne droite (miroir) -->
                 <path d="M112 36 Q120 28 116 20 Q112 28 108 24 Q110 32 112 36Z" fill="#c9a84c" opacity="0.7"/>
                 <path d="M116 36 Q124 30 122 22 Q116 30 114 26 Q116 34 116 36Z" fill="#c9a84c" opacity="0.55"/>
                 <path d="M108 36 Q116 32 114 22 Q108 30 106 28 Q108 34 108 36Z" fill="#c9a84c" opacity="0.6"/>
                 <path d="M120 32 Q126 26 124 18 Q120 26 118 24 Q120 30 120 32Z" fill="#c9a84c" opacity="0.45"/>
-                <!-- Tige -->
-                <line x1="14" y1="36" x2="116" y2="36" stroke="#c9a84c" stroke-width="0.8" opacity="0.5"/>
-                <!-- Petits détails floraux -->
+                <line x1="14" y1="36" x2="116" y2="36" stroke="#c9a84c" stroke-width="0.8" opacity="0.45"/>
                 <circle cx="65" cy="60" r="2.5" fill="#c9a84c" opacity="0.6"/>
                 <path d="M55 60 Q65 52 75 60" stroke="#c9a84c" stroke-width="0.8" fill="none" opacity="0.5"/>
                 <circle cx="55" cy="60" r="1.5" fill="#c9a84c" opacity="0.5"/>
                 <circle cx="75" cy="60" r="1.5" fill="#c9a84c" opacity="0.5"/>
-                <!-- Lettre J -->
-                <text x="46" y="48" font-family="'EB Garamond', serif" font-size="24" fill="#c9a84c" font-style="italic" font-weight="700">J</text>
-                <!-- Lettre N -->
-                <text x="72" y="48" font-family="'EB Garamond', serif" font-size="24" fill="#d4622a" font-style="italic" font-weight="700">N</text>
+                <text x="44" y="48" font-family="'EB Garamond', serif" font-size="25" fill="#c9a84c" font-style="italic" font-weight="700">J</text>
+                <text x="70" y="48" font-family="'EB Garamond', serif" font-size="25" fill="#d4622a" font-style="italic" font-weight="700">N</text>
             </svg>
         </div>
 
@@ -382,6 +429,8 @@
             </div>
         </div>
 
+        <div class="sep"></div>
+
         <!-- JOIE -->
         <div class="joie-text">Ont la joie de vous faire part du mariage de leurs enfants</div>
 
@@ -393,23 +442,20 @@
             </div>
             <div class="rings-center">
                 <svg class="rings-svg" viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Ring 1 -->
-                    <circle cx="26" cy="38" r="16" stroke="url(#gold1)" stroke-width="3.5" fill="none"/>
-                    <!-- Ring 2 -->
-                    <circle cx="42" cy="38" r="16" stroke="url(#gold2)" stroke-width="3.5" fill="none"/>
-                    <!-- Blue bow on top ring 2 -->
+                    <circle cx="26" cy="38" r="16" stroke="url(#g1)" stroke-width="3.5" fill="none"/>
+                    <circle cx="42" cy="38" r="16" stroke="url(#g2)" stroke-width="3.5" fill="none"/>
                     <ellipse cx="50" cy="24" rx="5" ry="3.5" fill="#3a5a9a" opacity="0.8" transform="rotate(-20 50 24)"/>
                     <ellipse cx="42" cy="21" rx="4" ry="2.5" fill="#4a6aaa" opacity="0.85" transform="rotate(10 42 21)"/>
                     <circle cx="46" cy="22" r="2" fill="#2a4a8a" opacity="0.7"/>
                     <defs>
-                        <linearGradient id="gold1" x1="10" y1="22" x2="42" y2="54">
+                        <linearGradient id="g1" x1="10" y1="22" x2="42" y2="54">
                             <stop offset="0%" stop-color="#f0d060"/>
-                            <stop offset="40%" stop-color="#c9a84c"/>
+                            <stop offset="50%" stop-color="#c9a84c"/>
                             <stop offset="100%" stop-color="#a07830"/>
                         </linearGradient>
-                        <linearGradient id="gold2" x1="26" y1="22" x2="58" y2="54">
+                        <linearGradient id="g2" x1="26" y1="22" x2="58" y2="54">
                             <stop offset="0%" stop-color="#f0d060"/>
-                            <stop offset="40%" stop-color="#c9a84c"/>
+                            <stop offset="50%" stop-color="#c9a84c"/>
                             <stop offset="100%" stop-color="#a07830"/>
                         </linearGradient>
                     </defs>
@@ -431,18 +477,16 @@
             <span class="date-month">JUIN</span>
         </div>
 
-        <!-- TIMELINE -->
-        <div class="events-section">
-            <!-- Ligne de timeline -->
-            <div style="grid-column:1/-1; display:flex; align-items:center; margin-bottom:18px;">
-                <div style="flex:1; height:1.5px; background:#2a2a2a;"></div>
-                <div style="width:10px;height:10px;border-radius:50%;background:#d4622a;margin:0 4px;flex-shrink:0;"></div>
-                <div style="flex:1; height:1.5px; background:#2a2a2a;"></div>
-                <div style="width:10px;height:10px;border-radius:50%;background:#d4622a;margin:0 4px;flex-shrink:0;"></div>
-                <div style="flex:1; height:1.5px; background:#2a2a2a;"></div>
-            </div>
+        <!-- TIMELINE EVENTS -->
+        <div class="timeline-bar">
+            <div class="tl-line"></div>
+            <div class="tl-dot"></div>
+            <div class="tl-line"></div>
+            <div class="tl-dot"></div>
+            <div class="tl-line"></div>
+        </div>
 
-            <!-- CÉRÉMONIE -->
+        <div class="events-section">
             <div class="event-col">
                 <div class="event-icon">
                     <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -460,20 +504,17 @@
                 <div class="event-detail">
                     Bénédiction nuptiale<br>
                     <strong>Chapelle SAINT ABRAHAM</strong><br>
-                    à la Trame d'accueil<br>de Ouaga 2000
+                    Trame d'accueil<br>de Ouaga 2000
                 </div>
             </div>
 
-            <!-- RÉCEPTION -->
             <div class="event-col">
                 <div class="event-icon">
                     <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Cloche -->
                         <path d="M26 8 C26 8 14 14 14 28 L38 28 C38 14 26 8 26 8Z" stroke="#2a2a2a" stroke-width="1.5" fill="none"/>
                         <line x1="10" y1="28" x2="42" y2="28" stroke="#2a2a2a" stroke-width="1.8" stroke-linecap="round"/>
                         <path d="M22 28 Q22 34 26 34 Q30 34 30 28" stroke="#2a2a2a" stroke-width="1.3" fill="none"/>
                         <circle cx="26" cy="6" r="2" fill="#2a2a2a"/>
-                        <!-- Étoile scintillante -->
                         <path d="M36 12 L37.2 15.6 L41 15.6 L38 17.8 L39.2 21.4 L36 19.2 L32.8 21.4 L34 17.8 L31 15.6 L34.8 15.6 Z" fill="#c9a84c" opacity="0.8"/>
                     </svg>
                 </div>
@@ -486,74 +527,166 @@
             </div>
         </div>
 
+        <!-- LOCALISATION -->
+        <div class="location-section" id="locSection">
+            <div class="location-header" id="locHeader">
+                <div class="location-header-left">
+                    <span style="font-size:1.1rem;">📍</span>
+                    <span class="location-title">LOCALISATION</span>
+                </div>
+                <span class="location-arrow" id="locArrow">▼</span>
+            </div>
+            <div class="location-body" id="locBody">
+                <div class="loc-item">
+                    <div class="loc-label">⛪ Chapelle Saint Abraham</div>
+                    <div class="loc-text">8G44+JV7, Ouaga 2000, Ouagadougou</div>
+                    <a class="loc-link" href="https://maps.google.com/?q=8G44+JV7+Ouaga+2000+Ouagadougou" target="_blank">🗺 Ouvrir dans Google Maps →</a>
+                </div>
+                <div class="loc-item">
+                    <div class="loc-label">🍽 Coccin'el (Réception)</div>
+                    <div class="loc-text">Face côté Est de la Chapelle Saint Abraham, Ouaga 2000</div>
+                </div>
+            </div>
+        </div>
+
         <!-- VERSE -->
         <div class="verse">
-            <em>Colossiens 3,14 : " Par-dessus tout cela, ayez l'amour,<br>qui est le lien le plus parfait. "</em>
+            <em>Colossiens 3,14 : « Par-dessus tout cela, ayez l'amour,<br>qui est le lien le plus parfait. »</em>
         </div>
 
     </div><!-- end inner -->
 </div><!-- end card -->
+</div><!-- end page -->
 
 <script>
-    (function () {
-        // ========== CANVAS MAGIQUE ==========
-        const canvas = document.getElementById('magicCanvas');
-        const ctx = canvas.getContext('2d');
-        let w, h, stars = [], petals = [], shootingStars = [];
+(function () {
 
-        function resizeCanvas() {
-            w = window.innerWidth; h = window.innerHeight;
-            canvas.width = w; canvas.height = h;
-            initStars(); initPetals();
-        }
-        function initStars() {
-            stars = [];
-            for (let i = 0; i < Math.floor(w * h / 5000); i++)
-                stars.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*1.8, alpha: Math.random()*0.3+0.1, twinkle: Math.random()*0.03 });
-        }
-        function initPetals() {
-            petals = [];
-            const cols = ['rgba(212,98,42,', 'rgba(201,168,76,', 'rgba(245,223,192,'];
-            for (let i = 0; i < 30; i++) {
-                const c = cols[Math.floor(Math.random()*3)];
-                petals.push({ x: Math.random()*w, y: Math.random()*h, size: 5+Math.random()*9, speedY: 0.4+Math.random()*1.1, speedX: (Math.random()-0.5)*0.4, rotation: Math.random()*Math.PI*2, color: `${c}${0.2+Math.random()*0.3})` });
-            }
-        }
-        function drawStars() {
-            for (let s of stars) {
-                ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-                ctx.fillStyle = `rgba(201,168,76,${s.alpha + Math.sin(Date.now()*0.002*s.twinkle)*0.12})`;
-                ctx.fill();
-            }
-        }
-        function addShootingStar() {
-            shootingStars.push({ x: Math.random()*w, y: Math.random()*h*0.3, angle: Math.PI/3+(Math.random()-0.5)*0.5, speed: 4+Math.random()*6, life: 1 });
-        }
-        setInterval(() => { if (Math.random() < 0.35) addShootingStar(); }, 4500);
-        function drawShootingStars() {
-            for (let i = 0; i < shootingStars.length; i++) {
-                const s = shootingStars[i];
-                const dx = Math.cos(s.angle)*s.speed, dy = Math.sin(s.angle)*s.speed;
-                ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(s.x-dx*2, s.y-dy*2);
-                ctx.strokeStyle = `rgba(212,98,42,${s.life*0.6})`; ctx.lineWidth = 1.5; ctx.stroke();
-                s.x += dx; s.y += dy; s.life -= 0.022;
-                if (s.x > w || s.y > h || s.life <= 0) shootingStars.splice(i--, 1);
-            }
-        }
-        function drawPetals() {
-            for (let p of petals) {
-                ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rotation);
-                ctx.fillStyle = p.color; ctx.beginPath();
-                ctx.ellipse(0, 0, p.size/2, p.size/3, 0, 0, Math.PI*2); ctx.fill(); ctx.restore();
-                p.y += p.speedY; p.x += p.speedX; p.rotation += 0.018;
-                if (p.y > h+30 || p.x < -50 || p.x > w+50) { p.y = -20; p.x = Math.random()*w; }
-            }
-        }
-        function animateBg() { ctx.clearRect(0,0,w,h); drawStars(); drawShootingStars(); drawPetals(); requestAnimationFrame(animateBg); }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas(); animateBg();
+    /* ======================================================
+       1. ARCHE DYNAMIQUE — s'adapte à la hauteur de la carte
+    ====================================================== */
+    function drawArch() {
+        const card = document.getElementById('mainCard');
+        const wrap = document.getElementById('archWrap');
+        const W = card.offsetWidth;
+        const H = card.offsetHeight;
+        const pad = Math.round(W * 0.065);
+        const archTop = Math.round(H * 0.04);
+        const archBottom = H - 2;
+        const archMidY = Math.round(H * 0.36);
+        wrap.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M${pad} ${archBottom} L${pad} ${archMidY} Q${pad} ${archTop} ${W/2} ${archTop} Q${W-pad} ${archTop} ${W-pad} ${archMidY} L${W-pad} ${archBottom}"
+                  stroke="#c9a84c" stroke-width="2" fill="none" opacity="0.85"/>
+        </svg>`;
+    }
+    window.addEventListener('load', drawArch);
+    window.addEventListener('resize', drawArch);
 
-    })();
+    /* ======================================================
+       2. CONFETTI RAIN à l'ouverture
+    ====================================================== */
+    const confCanvas = document.getElementById('confettiCanvas');
+    const cCtx = confCanvas.getContext('2d');
+    confCanvas.width = window.innerWidth;
+    confCanvas.height = window.innerHeight;
+
+    const COLORS = ['#d4622a','#c9a84c','#f5dfc0','#2e7d32','#e07040','#f0d060','#ffffff','#e8a890'];
+    const TOTAL = 180;
+    let pieces = [];
+    let confettiActive = true;
+
+    function makePiece() {
+        return {
+            x: Math.random() * confCanvas.width,
+            y: -10 - Math.random() * 60,
+            w: 6 + Math.random() * 8,
+            h: 3 + Math.random() * 5,
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+            rot: Math.random() * Math.PI * 2,
+            rotSpeed: (Math.random() - 0.5) * 0.12,
+            speedY: 2.5 + Math.random() * 3.5,
+            speedX: (Math.random() - 0.5) * 1.5,
+            opacity: 1,
+            shape: Math.random() > 0.5 ? 'rect' : 'circle'
+        };
+    }
+
+    for (let i = 0; i < TOTAL; i++) {
+        const p = makePiece();
+        p.y = Math.random() * confCanvas.height; // disperse initiale
+        pieces.push(p);
+    }
+
+    let confettiDone = false;
+    let frameCount = 0;
+
+    function animateConfetti() {
+        if (confettiDone) return;
+        frameCount++;
+        cCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
+
+        let allGone = true;
+        for (let p of pieces) {
+            p.y += p.speedY;
+            p.x += p.speedX;
+            p.rot += p.rotSpeed;
+            if (p.y < confCanvas.height + 20) allGone = false;
+            if (p.y > confCanvas.height + 20) continue;
+
+            // Fade out near bottom
+            if (p.y > confCanvas.height * 0.75) {
+                p.opacity = Math.max(0, 1 - (p.y - confCanvas.height * 0.75) / (confCanvas.height * 0.25));
+            }
+
+            cCtx.save();
+            cCtx.globalAlpha = p.opacity;
+            cCtx.translate(p.x, p.y);
+            cCtx.rotate(p.rot);
+            cCtx.fillStyle = p.color;
+            if (p.shape === 'rect') {
+                cCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            } else {
+                cCtx.beginPath();
+                cCtx.ellipse(0, 0, p.w / 2, p.h / 2, 0, 0, Math.PI * 2);
+                cCtx.fill();
+            }
+            cCtx.restore();
+        }
+
+        if (allGone || frameCount > 300) {
+            cCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
+            confettiDone = true;
+            return;
+        }
+        requestAnimationFrame(animateConfetti);
+    }
+
+    animateConfetti();
+
+    /* ======================================================
+       3. LOCALISATION — accordéon
+    ====================================================== */
+    const locHeader = document.getElementById('locHeader');
+    const locBody = document.getElementById('locBody');
+    const locArrow = document.getElementById('locArrow');
+    let locOpen = false;
+
+    locHeader.addEventListener('click', () => {
+        locOpen = !locOpen;
+        locBody.classList.toggle('show', locOpen);
+        locArrow.classList.toggle('open', locOpen);
+        if (navigator.vibrate) navigator.vibrate(20);
+    });
+
+    /* ======================================================
+       4. RESIZE confetti canvas
+    ====================================================== */
+    window.addEventListener('resize', () => {
+        confCanvas.width = window.innerWidth;
+        confCanvas.height = window.innerHeight;
+        drawArch();
+    });
+
+})();
 </script>
 </body>
 </html>
