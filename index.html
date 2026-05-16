@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>✨ Joël & Nadège | Mariage 6 Juin 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&amp;family=Cinzel:wght@400;600;700&amp;family=EB+Garamond:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet">
     <style>
         :root {
             --orange: #d4622a;
@@ -410,7 +410,8 @@
                 <path d="M55 60 Q65 52 75 60" stroke="#c9a84c" stroke-width="0.8" fill="none" opacity="0.5"/>
                 <circle cx="55" cy="60" r="1.5" fill="#c9a84c" opacity="0.5"/>
                 <circle cx="75" cy="60" r="1.5" fill="#c9a84c" opacity="0.5"/>
-                <text x="44" y="48" font-family="'EB Garamond', serif" font-size="25" fill="#c9a84c" font-style="italic" font-weight="700">J</text>
+                <text x="44" y="48" font-family="'EB Garamond', serif" font-size="25" fill="#d4622a" font-style="italic" font-weight="700">J</text>
+                <text x="57" y="48" font-family="'EB Garamond', serif" font-size="10" fill="#c9a84c" font-style="italic" font-weight="700">&</text>
                 <text x="70" y="48" font-family="'EB Garamond', serif" font-size="25" fill="#d4622a" font-style="italic" font-weight="700">N</text>
             </svg>
         </div>
@@ -582,7 +583,10 @@
     window.addEventListener('resize', drawArch);
 
     /* ======================================================
-       2. CONFETTI RAIN à l'ouverture
+       2. CONFETTI RAIN — durée prolongée (~8 secondes)
+          • Plus de particules (300)
+          • Vitesse de chute légèrement réduite
+          • Résistance à la fin de l'animation augmentée
     ====================================================== */
     const confCanvas = document.getElementById('confettiCanvas');
     const cCtx = confCanvas.getContext('2d');
@@ -590,34 +594,35 @@
     confCanvas.height = window.innerHeight;
 
     const COLORS = ['#d4622a','#c9a84c','#f5dfc0','#2e7d32','#e07040','#f0d060','#ffffff','#e8a890'];
-    const TOTAL = 180;
+    const TOTAL = 300;               // + de confettis
     let pieces = [];
-    let confettiActive = true;
+    let confettiDone = false;
+    let frameCount = 0;
+    const MAX_FRAMES = 600;          // ~10 secondes (si 60fps) / ou ~8 sec
 
     function makePiece() {
         return {
             x: Math.random() * confCanvas.width,
-            y: -10 - Math.random() * 60,
-            w: 6 + Math.random() * 8,
-            h: 3 + Math.random() * 5,
+            y: -10 - Math.random() * 80,     // départ plus étalé
+            w: 7 + Math.random() * 9,         // légèrement plus grands
+            h: 4 + Math.random() * 6,
             color: COLORS[Math.floor(Math.random() * COLORS.length)],
             rot: Math.random() * Math.PI * 2,
-            rotSpeed: (Math.random() - 0.5) * 0.12,
-            speedY: 2.5 + Math.random() * 3.5,
-            speedX: (Math.random() - 0.5) * 1.5,
+            rotSpeed: (Math.random() - 0.5) * 0.1,
+            speedY: 2.0 + Math.random() * 3.2, // descente un peu plus lente
+            speedX: (Math.random() - 0.5) * 1.8,
             opacity: 1,
             shape: Math.random() > 0.5 ? 'rect' : 'circle'
         };
     }
 
+    // Remplir le tableau
     for (let i = 0; i < TOTAL; i++) {
         const p = makePiece();
-        p.y = Math.random() * confCanvas.height; // disperse initiale
+        // Dispersion initiale dans tout l'écran pour éviter qu'ils tombent tous en bloc
+        p.y = Math.random() * confCanvas.height;
         pieces.push(p);
     }
-
-    let confettiDone = false;
-    let frameCount = 0;
 
     function animateConfetti() {
         if (confettiDone) return;
@@ -629,12 +634,14 @@
             p.y += p.speedY;
             p.x += p.speedX;
             p.rot += p.rotSpeed;
-            if (p.y < confCanvas.height + 20) allGone = false;
-            if (p.y > confCanvas.height + 20) continue;
+            
+            // Tant qu'il reste des particules dans le champ visible ou pas trop loin
+            if (p.y < confCanvas.height + 60) allGone = false;
+            if (p.y > confCanvas.height + 60) continue;
 
-            // Fade out near bottom
-            if (p.y > confCanvas.height * 0.75) {
-                p.opacity = Math.max(0, 1 - (p.y - confCanvas.height * 0.75) / (confCanvas.height * 0.25));
+            // Fade out progressif quand ils approchent du bas
+            if (p.y > confCanvas.height * 0.7) {
+                p.opacity = Math.max(0, 1 - (p.y - confCanvas.height * 0.7) / (confCanvas.height * 0.3));
             }
 
             cCtx.save();
@@ -652,7 +659,7 @@
             cCtx.restore();
         }
 
-        if (allGone || frameCount > 300) {
+        if (allGone || frameCount > MAX_FRAMES) {
             cCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
             confettiDone = true;
             return;
@@ -678,7 +685,7 @@
     });
 
     /* ======================================================
-       4. RESIZE confetti canvas
+       4. RESIZE confetti canvas & arche
     ====================================================== */
     window.addEventListener('resize', () => {
         confCanvas.width = window.innerWidth;
